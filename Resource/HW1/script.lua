@@ -137,6 +137,22 @@ function cli(options) --> t; update key,vals in `t` from command-line flags
 -- `main` fills in the settings, updates them from the command line, runs
 -- the start up actions (and before each run, it resets the random number seed and settongs);
 -- and, finally, returns the number of test crashed to the operating system.
+
+--[USAGE:   script.lua  [OPTIONS] [-g ACTION]
+--
+--OPTIONS:
+---d  --dump  on crash, dump stack = false
+---g  --go    start-up action      = data
+---h  --help  show help            = false
+---s  --seed  random number seed   = 937162211
+--
+--ACTIONS:
+---g  the	show settings
+---g  rand	generate, reset, regenerate same
+---g  sym	check syms
+---g  num	check nums
+
+--TBD: [158]options.help?
 function main(options,help,funs,     k,saved,fails)  --> nil; main program
   saved,fails={},0
   for k,v in pairs(cli(settings(help))) do options[k] = v; saved[k]=v end 

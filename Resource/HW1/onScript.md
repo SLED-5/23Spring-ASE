@@ -144,6 +144,8 @@ In the public function arguments, the following conventions apply (usually):
 - xs = a table of "x"; e.g. ns is a list of numbers and ss is a list of strings.
   
 
+print(scontrol, s)
+
 
 ## Test-Drive Development
 
