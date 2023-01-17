@@ -1,22 +1,30 @@
 import math
-import random
-
+import re
 
 # Numerics
 Seed = 937162211
 
+
 def rint(lo, hi):
-    return math.floor(0.5 + random.random(lo, hi))
+    return math.floor(0.5 + rand(lo, hi))
+
 
 def rand(lo, hi):
+    # Seed need to be reseted before each generation
     global Seed
+    localSeed = Seed
     lo, hi = lo or 0, hi or 1
-    Seed = (16807 * Seed) % 2147483647
+    localSeed = (16807 * Seed) % 2147483647
     return lo + (hi - lo) * Seed / 2147483647
 
-def rnd(n, nPlaces):
-    mult = 10**(nPlaces or 3)
-    return math.floor(n*mult+0.5) / mult
+
+def rnd(n, *nPlaces):
+    if len(nPlaces) != 0:
+        mult = 10 ** nPlaces[0]
+    else:
+        mult = 10 ** 3
+    return math.floor(n * mult + 0.5) / mult
+
 
 # Lists
 def fMap(t, fun):
@@ -27,6 +35,7 @@ def fMap(t, fun):
 
     return u
 
+
 def fKap(t, fun):
     u = {}
     for k, v in t.items():
@@ -35,19 +44,25 @@ def fKap(t, fun):
 
     return u
 
+
 def fSort(t, fun):
     t.sort(key=fun)
     return t
+
 
 def fKeys(t):
     x = t.keys().sort()
     return x
 
+
 # Strings
-### TODO: format
+
+def fmt(sControl, *arg):
+    return sControl.format(*arg)
+
 
 def o(t):
-    xs = sorted(t.items(), key=lambda item:item[0])
+    xs = sorted(t.items(), key=lambda item: item[0])
     cnt = 0
     ret = "{"
 
@@ -61,16 +76,39 @@ def o(t):
         else:
             v = str(v)
         ret += v
+        cnt += 1
 
-        if cnt != len(xs)-1:
+        if cnt < len(xs):
             ret += " "
 
     ret += "}"
 
     return ret
 
+
 def oo(t):
     print(o(t))
     return t
+
+
+def coerce(s):
+    def fun(val):
+        if val == "true":
+            return True
+        elif val == "false":
+            return False
+        else:
+            return val
+
+    try:
+        return int(s)
+    except ValueError:
+        try:
+            return float(s)
+        except ValueError:
+            return fun(s)
+
+
+
 
 

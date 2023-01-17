@@ -1,7 +1,7 @@
 import re
 import sys
 import math
-from utilis import *
+from utils import *
 from NUM import *
 from SYM import *
 import getopt
@@ -109,8 +109,6 @@ eg ('sym',"check syms", symEgFunc)
 eg('num', "check nums", numEgFunc)
 
 main(the,help)
-
-
 
 
 	
