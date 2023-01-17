@@ -27,4 +27,4 @@ jobs:
     - name: Run and Test
       run: |
         python ./Homework/HW1/script.py -g all
-    - run: echo "🧞‍♂️Job Status: ${{test.status}}."
+    - run: echo "🧞‍♂️Job Status: ${{job.status}}."
