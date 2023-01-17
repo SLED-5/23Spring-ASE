@@ -1,7 +1,7 @@
 import re
 import sys
 import math
-from utils import *
+from utilis import *
 from NUM import *
 from SYM import *
 import getopt
