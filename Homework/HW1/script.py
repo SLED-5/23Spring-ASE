@@ -1,7 +1,7 @@
 import re
 import sys
 import math
-from utils import *
+import utils as ut
 from NUM import *
 from SYM import *
 import getopt
@@ -19,7 +19,7 @@ def settings(s):
 	for match in matches:
 		k = match.groups(0)[0]
 		v = match.groups(0)[1]
-		t[k] = coerce(v)
+		t[k] = ut.coerce(v)
 	return t
 
 def cli(options):
@@ -41,7 +41,7 @@ def cli(options):
 				else:
 					if (len(argumentList) > i + 1):
 						v = argumentList[i + 1]
-		options[k] = coerce(v)
+		options[k] = ut.coerce(v)
 	return options
 
 # main
@@ -61,8 +61,8 @@ def main(options, help):
 			if options['go'] == "all" or what[0] == options['go']:
 				for k, v in saved.items():
 					options[k] = v
-				Seed = options["seed"]
-				if not egs[what[0]]():
+				ut.Seed = options["seed"]
+				if not what[1]():
 					fails = fails + 1
 					print("❌ fail:" + what[0])
 				else:
@@ -74,34 +74,36 @@ def eg(key, str, fun):
 	global help
 	global egs
 	egs[key] = fun
-	help = help + fmt("  -g  {}\t{}\n",key,str)
+	help = help + ut.fmt("  -g  {}\t{}\n",key,str)
 	
 ##TODO: debug this
 def randEgFunc():
 	num1, num2 = NUM(), NUM()
-	Seed = the["seed"]
-	for i in range(1, 100):
-		num1.add(rand(0,1))
-		num2.add(rand(0,1))
-	m1, m2 = rnd(num1.mid(), 10), rnd(num2.mid(), 10)
-	return m1 == m2 and rnd(m1, 1) == 0.5
+	ut.Seed = the["seed"]
+	for i in range(1, 1001):
+		num1.add(ut.rand(0,1))
+	ut.Seed = the["seed"]
+	for i in range(1, 1001):
+		num2.add(ut.rand(0,1))
+	m1, m2 = ut.rnd(num1.mid(), 10), ut.rnd(num2.mid(), 10)
+	return m1 == m2 and ut.rnd(m1, 1) == 0.5
 
 def symEgFunc():
 	sym = SYM()
 	pairs = ["a","a","a","a","b","b","c"]
 	for x in pairs:
 		sym.add(x)
-	return sym.mid() == "a" and rnd(sym.div()) == 1.379
+	return sym.mid() == "a" and ut.rnd(sym.div()) == 1.379
 
 def numEgFunc():
 	num = NUM()
 	pairs = [1,1,1,1,2,2,3]
 	for x in pairs:
 		num.add(x)
-	return num.mid() == 11/7 and rnd(num.div()) == 0.787
+	return num.mid() == 11/7 and ut.rnd(num.div()) == 0.787
 
 def packedOO():
-	return oo(the)
+	return ut.oo(the)
 	
 eg ('the', "show settings", packedOO)
 eg ('rand',"generate, reset, regenerate same", randEgFunc)
@@ -109,6 +111,8 @@ eg ('sym',"check syms", symEgFunc)
 eg('num', "check nums", numEgFunc)
 
 main(the,help)
+
+
 
 
 	
