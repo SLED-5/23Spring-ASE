@@ -3,7 +3,7 @@ import math
 class SYM:
 
     def __init__(self):
-        """"初始化方法"""
+        """"Init"""
         self.n = 0
         self.has = {}
         self.most, self.mode = 0, None
