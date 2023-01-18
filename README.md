@@ -6,7 +6,7 @@
 NC State
 23' Spring CSC 591(021) Automated Software Engineering group repository.
 
-**Group Member:**
+## Group Member:
 
 Dong Li
 
