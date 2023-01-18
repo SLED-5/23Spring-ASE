@@ -5,3 +5,13 @@
 
 NC State
 23' Spring CSC 591(021) Automated Software Engineering group repository.
+
+**Group Member:**
+
+Dong Li
+
+Enxi Zhang
+
+Kai Gao
+
+Zhijin Yang
