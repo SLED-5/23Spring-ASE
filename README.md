@@ -4,14 +4,16 @@
  [![DOI](https://zenodo.org/badge/588354384.svg)](https://zenodo.org/badge/latestdoi/588354384)
 
 NC State
-23' Spring CSC 591(021) Automated Software Engineering group repository.
+23' Spring CSC 591(021) Automated Software Engineering
 
-## Group Member:
+**Group 26** repository
 
-Dong Li
+## Contributors
 
-Enxi Zhang
+Dong Li &emsp;[StoicLD](https://github.com/StoicLD)
 
-Kai Gao
+Enxi Zhang &emsp;[SLED-5](https://github.com/SLED-5)
 
-Zhijin Yang
+Kai Gao &emsp;[SummerEkko](https://github.com/SummerEkko)
+
+Zhijin Yang &emsp;[yangzhijin4](https://github.com/yangzhijin4)
