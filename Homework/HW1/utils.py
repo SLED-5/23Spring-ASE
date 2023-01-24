@@ -95,20 +95,3 @@ def coerce(s):
             return float(s)
         except ValueError:
             return fun(s)
-        
-
-def csv(filename, func):
-    with open(filename) as f:
-        lines = f.readlines()
-        for line in lines:
-            if line:
-                pattern = re.compile("[^,]+")
-                matches = re.finditer(pattern, line)
-                cols_in_a_row = []
-                for match in matches:
-                    cols_in_a_row.append(coerce(match))
-                func(cols_in_a_row)
-
-
-
-    
