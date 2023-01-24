@@ -1,7 +1,5 @@
 from COLS import *
-import utils
 from ROW import *
-import COLS
 class DATA:
     def __init__(self, src):
         self.rows, self.cols = {}, None
@@ -17,6 +15,8 @@ class DATA:
 
     def add(self, t):
         if self.cols:
+            # this place is not sure
+            t = ROW(t)
             t = t.cells and t and ROW(t)
             utils.push(self.rows, t)
             self.cols.add(t)
@@ -33,10 +33,10 @@ class DATA:
         utils.fMap(init or {}, fun)
         return data
 
-    def stats(self, what, cols, n):
+    def stats(self, what, cols, nPlaces):
         def fun(k, col):
-            # what's getmetatable and what's nPlaces
-            return col.rnd(getmetatable(col)[what or "mid"](col), nPlaces), col.txt
+            # what's getmetatable is not sure
+            return col.rnd(getattr(col, what or "mid"), nPlaces), col.txt
 
         return utils.fKap(cols or self.cols.y, fun)
 
