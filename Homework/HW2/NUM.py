@@ -1,7 +1,7 @@
 class NUM:
 
     def __init__(self, at, txt):
-        self.at, self.txt = at or 0, tet or ""
+        self.at, self.txt = at or 0, txt or ""
 
         self.n, self.mu, self.m2 = 0, 0, 0
 
@@ -25,4 +25,4 @@ class NUM:
         return (self.m2<0 or self.n<2) and 0 or (self.m2/(self.n-1))**0.5
 
     def rnd(self, x, n):
-        return x == "?" and x or rnd(x,n)
+        return x == "?" and x or self.rnd(x,n)
