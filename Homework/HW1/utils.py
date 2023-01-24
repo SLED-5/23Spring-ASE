@@ -95,9 +95,3 @@ def coerce(s):
             return float(s)
         except ValueError:
             return fun(s)
-        
-
-    
-
-
-    
