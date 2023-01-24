@@ -7,16 +7,17 @@ class COLS:
     def __init__(self, t):
         self.name, self.all, self.x, self.y, self.klass = t, {}, {}, {}, {}
         for n,s in enumerate(t):
-            col = s.find("^[A-Z]+") and NUM(n, s) or SYM(n, s)
+            col = s.match("^[A-Z]+") and NUM(n, s) or SYM(n, s)
             utils.push(self.all, col)
-            if not s.find("X$"):
-                if s.find("!$"):
+            if not s.match("X$"):
+                if s.match("!$"):
                     self.klass = col
-                utils.push(s.find("[!+-]") and self.y or self.x, col)
+                utils.push(s.match("[!+-]") and self.y or self.x, col)
 
     def add(self, row):
-        for t in {self.x, self.y}.values():
-            for col in t.values():
-                col.add(row.cells[col.at])
+        for x in self.x:
+            for t in self.y:
+                for col in t.values():
+                    col.add(row.cells[col.at])
 
 
