@@ -1,0 +1,22 @@
+local _ = " "
+return {
+ domain="dissementian platforms",
+ cols={   {'DevelopmentTool', 5, 3, 3, 1, 1, 1, 1, 3, 5, 5, 'Application'},
+               {'Multimedia', 2, 1, 1, 5, 5, 5, 5, 5, 1, 2, 'Programming'},
+  {'CommunicationTechnology', 1, 3, 1, 3, 2, 5, 4, 3, 1, 1, 'ApplicationTechnology'},
+       {'HumanOrientedTool' , 2, 1, 1, 1, 3, 5, 3, 2, 2, 2, 'SystemTool'},
+{'ConventionalCommunication', 1, 5, 3, 4, 1, 1, 4, 5, 4, 4, 'NovelCommunication'},
+      {'OnlyActAsProgrammed', 1, 4, 1, 1, 1, 1, 1, 5, 3, 1, 'Semi-autonomous'},
+       {'ConventionalSystem', 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 'IntelligentSystem'},
+      {'TargetedOnInterface', 1, 1, 1, 1, 1, 5, 5, 5, 3, 3, 'TargetedOnOverallSystem'}},
+rows={                      { _, _, _, _, _, _, _, _, _, 'BroadbandNetworks'},
+                            { _, _, _, _, _, _, _, _, 'InformationHighway'},
+                            { _, _, _, _, _, _, _, 'IntelligentAgents'},
+                            { _, _, _, _, _, _, 'KnowledgeBasedSystems'},
+                            { _, _, _, _, _,  'ObjectOrientedSystems'},
+                            { _, _, _, _,  'CrossPlatformGUIs'},
+                            { _, _, _,  'VisualProgramming'},
+                            { _, _,  'MultimediaAndHypermedia'},
+                            { _, 'VirtualReality'},
+                            {'ElectronicPublishing'}}
+}
