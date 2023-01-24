@@ -6,7 +6,7 @@ import COLS
 class DATA:
     def __init__(self, src, fun):
         self.rows, self.cols = {}, None
-        if type(src) == "string":
+        if type(src) == str:
             pd.read_csv(src, self.add())
         else:
             utils.fMap(src or {}, fun)
