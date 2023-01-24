@@ -123,11 +123,14 @@ def csv(filename, func):
         lines = f.readlines()
         for line in lines:
             if line:
-                pattern = re.compile("[^,]+")
-                matches = re.finditer(pattern, line)
+                pattern = re.compile(r"[^,]+")
+                matches = re.findall(pattern, line)
+                # matches = re.finditer(pattern, line)
                 cols_in_a_row = []
                 for match in matches:
                     cnt += 1
+                    # k = match.groups(0)
+                    # print(match)
                     cols_in_a_row.append(coerce(match))
                 func(cols_in_a_row)
 

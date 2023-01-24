@@ -1,5 +1,9 @@
 .DS_Store
 
+# Project exclude paths
+/venv/
+.idea/
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
