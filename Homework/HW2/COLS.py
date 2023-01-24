@@ -4,22 +4,19 @@ import utils
 
 class COLS:
 
-    def __init__(self, t, cols):
-        col = {}
-        self.name, self.all, self.x, self.y, self.klass = t, {}, {}, {}
+    def __init__(self, t):
+        self.name, self.all, self.x, self.y, self.klass = t, {}, {}, {}, {}
         for n,s in enumerate(t):
-            num = NUM(n, s)
-            sym = SYM(n, s)
-            col = s.find("^[A-Z]+") and num or sym
+            col = s.find("^[A-Z]+") and NUM(n, s) or SYM(n, s)
             utils.push(self.all, col)
             if not s.find("X$"):
                 if s.find("!$"):
                     self.klass = col
-                    utils.push(s.find("[!+-]" and self.y or self.x), col)
+                utils.push(s.find("[!+-]") and self.y or self.x, col)
 
     def add(self, row):
         for t in {self.x, self.y}.values():
             for col in t.values():
-                return col.add(row.cells[col.at])
+                col.add(row.cells[col.at])
 
 

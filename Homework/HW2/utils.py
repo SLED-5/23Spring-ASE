@@ -50,6 +50,14 @@ def fSort(t, fun):
     return t
 
 
+# t should be a list or it is supposed to have a method called "append"
+def push(t, x):
+    try:
+        t.append(x)
+    except Exception as e:
+        print(e)
+
+
 def fKeys(t):
     x = t.keys().sort()
     return x

@@ -2,11 +2,8 @@ class NUM:
 
     def __init__(self, at, txt):
         self.at, self.txt = at or 0, txt or ""
-
         self.n, self.mu, self.m2 = 0, 0, 0
-
         self.lo, self.hi = float('inf'), float('-inf')
-
         self.w = self.txt.find("-$" ) and -1 or 1
 
     def add(self,n):

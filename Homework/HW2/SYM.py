@@ -2,8 +2,9 @@ import math
 
 class SYM:
 
-    def __init__(self):
+    def __init__(self, at, txt):
         """"Init"""
+        self.at, self.txt = at or 0, txt or ""
         self.n = 0
         self.has = {}
         self.most, self.mode = 0, None
