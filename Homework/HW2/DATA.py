@@ -1,41 +1,44 @@
-import pandas as pd
 from COLS import *
 import utils
-import ROW
+from ROW import *
 import COLS
 class DATA:
-    def __init__(self, src, fun):
+    def __init__(self, src):
         self.rows, self.cols = {}, None
-        if type(src) == "string":
-            pd.read_csv(src, self.add())
+
+        def fun(x):
+            self.add(x)
+
+        if type(src) == str:
+            utils.csv(src, fun)
         else:
             utils.fMap(src or {}, fun)
 
 
     def add(self, t):
         if self.cols:
-            row_t = ROW()
-            t = t.cells and t and row_t
+            # t = t.cells and t and ROW(t)
+            t = ROW(t.cells and t.cells or t)
             utils.push(self.rows, t)
+            self.cols.add(t)
         else:
             self.cols = COLS(t)
 
 
     def clone(self, init):
         data = DATA({self.cols.names})
-        x = self.fun1(data)
-        utils.fMap(init or {}, x)
+
+        def fun(x):
+            data.add(x)
+
+        utils.fMap(init or {}, fun)
         return data
 
-    def fun1(self, x):
-        return self.add(x)
-
     def stats(self, what, cols, n):
-        fun = {}
-        # function fun(k, col) return col:rnd(getmetatable(col)[what or "mid"](col), nPlaces), col.txt end
-        return utils.fKap(cols or self.cols.y, fun)
+        def fun(k, col):
+            # what's getmetatable and what's nPlaces
+            return col.rnd(getmetatable(col)[what or "mid"](col), nPlaces), col.txt
 
-    def fun2(self, k, col):
-        return 1
+        return utils.fKap(cols or self.cols.y, fun)
 
 
