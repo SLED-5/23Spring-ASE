@@ -1,23 +1,24 @@
 from NUM import *
 from SYM import *
 import utils
+import re
 
 class COLS:
 
     def __init__(self, t):
         self.name, self.all, self.x, self.y, self.klass = t, [], [], [], []
         for n,s in enumerate(t):
-            col = s.find("^[A-Z]+") and NUM(n, s) or SYM(n, s)
+            col =NUM(n, s) if s.find("^[A-Z]+") else SYM(n, s)
             utils.push(self.all, col)
-            if not s.find("X$"):
-                if s.find("!$"):
+            if not re.search("X$", s):
+                if re.search("!$", s):
                     self.klass = col
-                utils.push(s.find("[!+-]$") and self.y or self.x, col)
+                utils.push(self.y if re.search("[!+-]$", s) else self.x, col)
 
     def add(self, row):
         for t in [self.x, self.y]:
-            for col in enumerate(t):
-                col.add (row.cells[col.at])
+            for col in t:
+                col.add(row.cells[col.at])
             
 
 

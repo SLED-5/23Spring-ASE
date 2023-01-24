@@ -36,7 +36,7 @@ class DATA:
         utils.fMap(init[0] if len(init) > 0 else {}, fun)
         return data
 
-    def stats(self, what, cols, n):
+    def stats(self, what, cols, nPlaces):
         def fun(k, col):
             # what's getmetatable and what's nPlaces
             return col.rnd(getattr(col, what if what else "mid")(col), nPlaces), col.txt
