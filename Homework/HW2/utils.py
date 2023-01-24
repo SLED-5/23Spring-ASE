@@ -121,7 +121,11 @@ def fcsv(filename, func):
     with open(filename) as f:
         reader = csv.reader(f)
         for line in reader:
-            func(line)
+            converted = []
+            for item in line:
+                converted.append(coerce(item))
+            cnt += len(converted)
+            func(converted)
 
 #       lines = f.readlines()
 #       for line in lines:

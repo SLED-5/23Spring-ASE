@@ -48,6 +48,7 @@ def numEgFunc():
 	return num.mid() == 11/7 and utils.rnd(num.div()) == 0.787
 
 def crfc():
+	
 	return utils.cnt == 8 * 399
 
 def drdc():
