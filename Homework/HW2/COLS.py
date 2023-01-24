@@ -1,5 +1,6 @@
 from NUM import *
 from SYM import *
+from ROW import *
 class COLS:
 
     def __init__(self, t, col, cols):
@@ -17,6 +18,7 @@ class COLS:
     def add(self, row):
         for t in {self.x, self.y}.values():
             for col in t.values():
+                return col
                 # col:add()
 
 
