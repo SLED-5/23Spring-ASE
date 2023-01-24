@@ -5,17 +5,12 @@ import COLS
 class DATA:
     def __init__(self, src):
         self.rows, self.cols = {}, None
-<<<<<<< HEAD
-        if type(src) == str:
-            pd.read_csv(src, self.add())
-=======
 
         def fun(x):
             self.add(x)
 
         if type(src) == str:
             utils.csv(src, fun)
->>>>>>> b0b5cc0ff28c75ccb79b7ac466f6175a7b0ce09c
         else:
             utils.fMap(src or {}, fun)
 

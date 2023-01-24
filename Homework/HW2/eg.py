@@ -46,19 +46,19 @@ def crfc():
 	return utils.cnt == 8 * 399
 
 def drdc():
-	data = DATA(the["file"])
+	data = DATA(the.file)
 	return len(data.rows) == 398 and data.cols.y[1].w == -1 and data.cols.x[1].at == 1 and len(data.cols.x) == 4
 
 def ssfd():
-	data = DATA(the["file"])
+	data = DATA(the.file)
 	for k, cols in zip(data.cols.y, data.cols.x):
 		print(k, "mid", utils.o(data.stats("mid", cols, 2)))
 		print("", "div", utils.o(data.stats("div", cols, 2)))
 
 def runTest():
 	eg ('the', "show settings", packedOO)
-	eg('csv',"read from csv", crfc)
-	eg('data',"read DATA csv", drdc)
+	eg("csv","read from csv", crfc)
+	eg("data","read DATA csv", drdc)
 	eg ('sym', "check syms", symEgFunc)
 	eg('num', "check nums", numEgFunc)
 	
