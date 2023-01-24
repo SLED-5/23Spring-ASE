@@ -17,8 +17,7 @@ class DATA:
 
     def add(self, t):
         if self.cols:
-            # t = t.cells and t and ROW(t)
-            t = ROW(t.cells and t.cells or t)
+            t = t.cells and t and ROW(t)
             utils.push(self.rows, t)
             self.cols.add(t)
         else:
