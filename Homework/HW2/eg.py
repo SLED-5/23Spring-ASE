@@ -1,5 +1,24 @@
 import utils, NUM, SYM, COLS, ROW, DATA
 
+egs = {}
+
+the = {}
+help = '''[[   
+data.lua : an example csv reader script
+(c)2022, Tim Menzies <timm@ieee.org>, BSD-2 
+
+USAGE:   data.lua  [OPTIONS] [-g ACTION]
+
+OPTIONS:
+	-d  --dump  on crash, dump stack = false
+	-f  --file  name of file         = ../etc/data/auto93.csv
+	-g  --go    start-up action      = data
+	-h  --help  show help            = false
+	-s  --seed  random number seed   = 937162211
+
+ACTIONS:
+]]'''
+
 def eg(key, str, fun):
 	global help
 	global egs
@@ -36,9 +55,10 @@ def ssfd():
 		print(k, "mid", utils.o(data.stats("mid", cols, 2)))
 		print("", "div", utils.o(data.stats("div", cols, 2)))
 
-def sum_test():
+def runTest():
 	eg ('the', "show settings", packedOO)
 	eg("csv","read from csv", crfc)
 	eg("data","read DATA csv", drdc)
 	eg ('sym', "check syms", symEgFunc)
 	eg('num', "check nums", numEgFunc)
+	
