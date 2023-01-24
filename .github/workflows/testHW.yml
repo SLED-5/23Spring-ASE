@@ -27,6 +27,8 @@ jobs:
       - name: Run and Test
         run: |
           python ./Homework/HW1/script.py -g all
+          python ./Homework/HW2/script.py -g all
+
       - name: Report
         run: |
           echo "🧞‍♂️Job Status: ${{ job.status }}."
