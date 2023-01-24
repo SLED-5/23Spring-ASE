@@ -1,6 +1,7 @@
 import math
 import re
 
+cnt = 0
 # Numerics
 Seed = 937162211
 
@@ -109,6 +110,7 @@ def coerce(s):
 
 
 def csv(filename, func):
+    global cnt
     with open(filename) as f:
         lines = f.readlines()
         for line in lines:
@@ -117,6 +119,7 @@ def csv(filename, func):
                 matches = re.finditer(pattern, line)
                 cols_in_a_row = []
                 for match in matches:
+                    cnt += 1
                     cols_in_a_row.append(coerce(match))
                 func(cols_in_a_row)
 
