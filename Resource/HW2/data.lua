@@ -112,7 +112,9 @@ function DATA.new(i,src,     fun) --> DATA; A container of `i.rows`, to be summa
   
 function DATA.add(i,t) --> nil; add a new row, update column headers
   if   i.cols          --] true if we have already seen the column names
-  then t = t.cells and t or ROW(t) -- ensure is a ROW, reusing old rows in the are passed in
+  then t = t.cells and t or ROW(t)
+
+  if -- ensure is a ROW, reusing old rows in the are passed in
        -- t =ROW(t.cells and t.cells or t) -- make a new ROW
        push(i.rows, t) -- add new data to "i.rows"
        i.cols:add(t)  -- update the summary information in "ic.ols"

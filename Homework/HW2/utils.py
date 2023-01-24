@@ -1,5 +1,7 @@
 import math
 import re
+from ROW import *
+import csv
 
 cnt = 0
 # Numerics
@@ -52,10 +54,7 @@ def fSort(t, fun):
 
 # t should be a list or it is supposed to have a method called "append"
 def push(t, x):
-    try:
-        t.append(x)
-    except Exception as e:
-        print(e)
+    t.append(x)
 
 
 def fKeys(t):
@@ -117,22 +116,26 @@ def coerce(s):
             return fun(s)
 
 
-def csv(filename, func):
+def fcsv(filename, func):
     global cnt
     with open(filename) as f:
-        lines = f.readlines()
-        for line in lines:
-            if line:
-                pattern = re.compile(r"[^,]+")
-                matches = re.findall(pattern, line)
-                # matches = re.finditer(pattern, line)
-                cols_in_a_row = []
-                for match in matches:
-                    cnt += 1
-                    # k = match.groups(0)
-                    # print(match)
-                    cols_in_a_row.append(coerce(match))
-                func(cols_in_a_row)
+        reader = csv.reader(f)
+        for line in reader:
+            func(line)
+
+#       lines = f.readlines()
+#       for line in lines:
+#           if line:
+#               pattern = re.compile(r"[^,]+")
+#               matches = re.findall(pattern, line)
+#               # matches = re.finditer(pattern, line)
+#               cols_in_a_row = []
+#               for match in matches:
+#                   cnt += 1
+#                   # k = match.groups(0)
+#                   # print(match)
+#                   cols_in_a_row.append(coerce(match))
+#               func(cols_in_a_row)
 
 
 
