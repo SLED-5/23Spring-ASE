@@ -1,0 +1,6 @@
+{:dump false :file ./etc/data/auto93.csv :go all :help false :seed 937162211}
+✅ pass:the
+✅ pass:csv
+✅ pass:data
+✅ pass:sym
+✅ pass:num
