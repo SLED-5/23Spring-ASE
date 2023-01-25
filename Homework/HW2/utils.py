@@ -13,7 +13,6 @@ def rint(lo, hi):
 
 
 def rand(lo, hi):
-    # Seed need to be reseted before each generation
     global Seed
     lo, hi = lo or 0, hi or 1
     Seed = (16807 * Seed) % 2147483647
@@ -51,8 +50,6 @@ def fSort(t, fun):
     t.sort(key=fun)
     return t
 
-
-# t should be a list or it is supposed to have a method called "append"
 def push(t, x):
     t.append(x)
 
@@ -127,20 +124,4 @@ def fcsv(filename, *func):
             cnt += len(converted)
             if (len(func) > 0):
                 func[0](converted)
-
-#       lines = f.readlines()
-#       for line in lines:
-#           if line:
-#               pattern = re.compile(r"[^,]+")
-#               matches = re.findall(pattern, line)
-#               # matches = re.finditer(pattern, line)
-#               cols_in_a_row = []
-#               for match in matches:
-#                   cnt += 1
-#                   # k = match.groups(0)
-#                   # print(match)
-#                   cols_in_a_row.append(coerce(match))
-#               func(cols_in_a_row)
-
-
 
