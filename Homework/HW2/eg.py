@@ -48,12 +48,12 @@ def numEgFunc():
 	return num.mid() == 11/7 and utils.rnd(num.div()) == 0.787
 
 def crfc():
-	
+	utils.fcsv(the["file"])
 	return utils.cnt == 8 * 399
 
 def drdc():
 	data = DATA(the["file"])
-	return len(data.rows) == 398 and data.cols.y[0].w == -1 and data.cols.x[0].at == 1 and len(data.cols.x) == 4
+	return len(data.rows) == 398 and data.cols.y[0].w == -1 and data.cols.x[0].at == 0 and len(data.cols.x) == 4
 
 def ssfd():
 	data = DATA(the["file"])

@@ -116,7 +116,7 @@ def coerce(s):
             return fun(s)
 
 
-def fcsv(filename, func):
+def fcsv(filename, *func):
     global cnt
     with open(filename) as f:
         reader = csv.reader(f)
@@ -125,7 +125,8 @@ def fcsv(filename, func):
             for item in line:
                 converted.append(coerce(item))
             cnt += len(converted)
-            func(converted)
+            if (len(func) > 0):
+                func[0](converted)
 
 #       lines = f.readlines()
 #       for line in lines:
