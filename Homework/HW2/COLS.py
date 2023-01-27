@@ -8,7 +8,7 @@ class COLS:
     def __init__(self, t):
         self.name, self.all, self.x, self.y, self.klass = t, [], [], [], []
         for n,s in enumerate(t):
-            col = NUM(n, s) if s.find("^[A-Z]+") else SYM(n, s)
+            col = NUM(n, s) if re.search("^[A-Z]+", s) else SYM(n, s)
             utils.push(self.all, col)
             if not re.search("X$", s):
                 if re.search("!$", s):
