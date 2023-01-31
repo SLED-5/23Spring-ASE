@@ -14,7 +14,7 @@ USAGE: cluster.lua  [OPTIONS] [-g ACTION]
 
 OPTIONS:
   -d  --dump    on crash, dump stack   = false
-  -f  --file    name of file           = ../etc/data/auto93.csv
+  -f  --file    name of file           = ./etc/data/auto93.csv
   -F  --Far     distance to "faraway"  = .95
   -g  --go      start-up action        = data
   -h  --help    show help              = false

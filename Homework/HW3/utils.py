@@ -7,6 +7,14 @@ cnt = 0
 # Numerics
 Seed = 937162211
 
+def show(node, what, cols, nPlaces, lvl=0):
+    if node:
+        lvl = lvl or 0
+        print("| " * lvl + str(len(node.data.rows)) + "  ")
+        print("" if not node.left or lvl == 0 else o(node.data.stats("mid", node.data.cols.y, nPlaces)))
+        show(node.left, what, cols, nPlaces, lvl + 1)
+        show(node.right, what, cols, nPlaces, lvl + 1)
+
 
 def rint(lo, hi):
     return math.floor(0.5 + rand(lo, hi))
@@ -19,11 +27,8 @@ def rand(lo, hi):
     return lo + (hi - lo) * Seed / 2147483647
 
 
-def rnd(n, *nPlaces):
-    if len(nPlaces) != 0:
-        mult = 10 ** nPlaces[0]
-    else:
-        mult = 10 ** 3
+def rnd(n, nPlaces=3):
+    mult = 10 ** nPlaces
     return math.floor(n * mult + 0.5) / mult
 
 def cosine(a, b, c):
@@ -35,16 +40,16 @@ def cosine(a, b, c):
 
 # Lists
 def fMap(t, fun):
-    u = {}
+    u = []
     for k, v in t.items():
         v, k = fun(v)
-    u[k or (1 + len(u))] = v
+        u[k or (1 + len(u))] = v
 
     return u
 
 
 def fKap(t, fun):
-    u = {}
+    u = []
     for k, v in t.items():
         v, k = fun(k, v)
     u[k or (1 + len(u))] = v
@@ -77,7 +82,7 @@ def any(t):
 def many(t, n):
     u = []
     for i in range(n):
-        u.append(ant(t))
+        u.append(any(t))
 
 # Strings
 
