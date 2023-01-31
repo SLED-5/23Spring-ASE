@@ -59,9 +59,7 @@ function DATA.sway(i,  rows,min,cols,above) --> t; returns best half, recursivel
     node.left  = i:sway(left,  min, cols, node.A) end
   return node end
 """
-def x(a, b=0, c):
-    if b == 0:
-        b = 5
-    print(a, b, c)
-
-x(1,2)
+def x():
+    return [1,2,3,4,5]
+y = x()
+print(y[3])

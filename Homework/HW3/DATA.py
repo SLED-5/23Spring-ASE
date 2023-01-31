@@ -73,7 +73,7 @@ class DATA:
             return (row2, self.dist(row1, row2, cols))
 
         d = utils.fMap(rows, fun)
-        return sorted(d.items(), key=lambda x: x[1])    # 最后可能要改，看utils怎么写的吧，逻辑是这样的, line 97也是
+        return sorted(d.items(), key=lambda x: x[1])    # 最后可能要改，看utils怎么写的吧，逻辑是这样的, line 98也是
         # if rows == None:
         #     rows = self.rows
         #
@@ -84,15 +84,15 @@ class DATA:
             rows = self.rows
 
         def project(row):
-            return (row, utils.cosine(self.dist(row,A), self.dist(row,B), c))
+            return (row, utils.cosine(d(row,A), d(row,B), c))
 
         def d(row1, row2):
             return self.dist(row1, row2, cols)
 
         some = utils.many(rows, the.Sample)
-        A = above or any(some)
+        A = above or utils.any(some)
         B = self.around(A, some)[(the.Far *  len(rows))//1].row
-        c = d(A, B)    #
+        c = d(A, B)
         left, right = [], []
 
         for n, tmp in sorted(utils.fMap(rows, project)):
@@ -102,7 +102,7 @@ class DATA:
             else:
                 right.append(tmp.row)
 
-        return left, right, A, B, mid, c
+        return [left, right, A, B, mid, c]
 
     def cluster(self, above, rows=None, minn=None, cols=None):
         if rows == None:
@@ -114,10 +114,9 @@ class DATA:
 
         node = self.clone(rows)
         if len(rows) > 2*minn:
-            left, right, node.A, node.B, node.mid = self.half(cols, above, rows) # node.A写法可能不对，可能是node[3]，下边也是
-            node.left = self.cluster(node.A, left, minn, cols)
-            node.right = self.cluster(node.B, right, minn, cols)
-
+            left, right, node[2], node.[3], node[4] = self.half(cols, above, rows) # node.A写法可能不对，可能是node[3]，下边也是
+            node[0] = self.cluster(node[2], left, minn, cols)
+            node[1] = self.cluster(node[3], right, minn, cols)
 
         return node
 
@@ -131,9 +130,9 @@ class DATA:
 
         node = self.clone(rows)
         if len(rows) > 2 * minn:
-            left, right, node.A, node.B, node.mid = self.half(cols, above, rows)
-            if self.better(node.B, node.A):
-                left, right, node.A, node.B = right, left, node.B, node.A
-            node.left = self.sway(node.A, left, minn, cols)
+            left, right, node[2], node[3], node[4] = self.half(cols, above, rows)
+            if self.better(node[3], node[2]):
+                left, right, node[2], node[3] = right, left, node[3], node[2]
+            node[0] = self.sway(node[2], left, minn, cols)
 
         return node
