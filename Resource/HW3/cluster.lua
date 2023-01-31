@@ -161,8 +161,7 @@ function DATA.dist(i,row1,row2,  cols,      n,d) --> n; returns 0..1 distance `r
   return (d/n)^(1/the.p) end
 
 function DATA.around(i,row1,  rows,cols) --> t; sort other `rows` by distance to `row`
-  return sort(map(rows or i.rows, 
-                  function(row2)  return {row=row2, dist=i:dist(row1,row2,cols)} end),lt"dist") end
+  return sort(map(rows or i.rows, function(row2)  return {row=row2, dist=i:dist(row1,row2,cols)} end),lt"dist") end
 
 function DATA.half(i,rows,  cols,above) --> t,t,row,row,row,n; divides data using 2 far points
   local A,B,left,right,c,dist,mid,some,project
@@ -182,7 +181,7 @@ function DATA.half(i,rows,  cols,above) --> t,t,row,row,row,n; divides data usin
 
 function DATA.cluster(i,  rows,min,cols,above) --> t; returns `rows`, recursively halved
   local node,left,right,A,B,mid
-  rows = rows or i.rows
+  rows = rows or i.rows 
   min  = min or (#rows)^the.min
   cols = cols or i.cols.x
   node = {data=i:clone(rows)} --xxx cloning
