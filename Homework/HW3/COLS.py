@@ -7,8 +7,13 @@ import re
 class COLS:
 
     def __init__(self, t):
-        self.name, self.all, self.x, self.y, self.klass = t, [], [], [], []
-        for n, s in enumerate(t):
+        self.name, self.all, self.x, self.y, self.klass = [], [], [], [], []
+        if type(t) == list:
+            self.name = t
+        elif type(t) == str:
+            self.name = []
+            self.name.append(t)
+        for n, s in enumerate(self.name):
             col = NUM(n, s) if re.search("^[A-Z]+", s) else SYM(n, s)
             utils.push(self.all, col)
             if not re.search("X$", s):

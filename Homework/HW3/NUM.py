@@ -1,4 +1,5 @@
 import math
+import utils
 class NUM:
 
     def __init__(self, at, txt):
@@ -23,7 +24,9 @@ class NUM:
         return (self.m2<0 or self.n<2) and 0 or (self.m2/(self.n-1))**0.5
 
     def rnd(self, x, n):
-        return x == "?" and x or self.rnd(x,n)
+        if x == "?":
+            return x
+        return utils.rnd(x,n)
 
     # 1E-32不确定，我推测是e**-32
     def norm(self, n):

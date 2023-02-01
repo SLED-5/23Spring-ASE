@@ -11,6 +11,7 @@ from config import the
 class DATA:
     def __init__(self, src):
         self.rows, self.cols = [], None
+        self.A, self.B, self.left, self.right, self.mid = None, None, None, None, None
 
         def fun(x):
             self.add(x)
@@ -18,7 +19,8 @@ class DATA:
         if type(src) == str:
             utils.fcsv(src, fun)
         else:
-            utils.fMap(src or {}, fun)
+            self.cols = COLS(src)
+            # utils.fMap(src or {}, fun)
 
     def add(self, t):
         if self.cols:
@@ -33,19 +35,19 @@ class DATA:
             self.cols = COLS(t)
 
     def clone(self, *init):
-        return copy.deepcopy(self)
-        # data = DATA({self.cols.name})
-        #
-        # def fun(x):
-        #     data.add(x)
-        #
-        # utils.fMap(init[0] if len(init) > 0 else {}, fun)
-        # return data
+        # return copy.deepcopy(self)
+        data = DATA(self.cols.name)
+
+        def fun(x):
+            data.add(x)
+
+        utils.fMap(init[0] if len(init) > 0 else {}, fun)
+        return data
 
     def stats(self, what, cols, nPlaces):
-        def fun(k, col):
+        def fun(col):
             # what's getmetatable and what's nPlaces
-            return col.rnd(getattr(col, what if what else "mid")(col), nPlaces), col.txt
+            return col.rnd(getattr(col, what if what else "mid")(), nPlaces), col.txt
 
         return utils.fKap(cols or self.cols.y, fun)
 
@@ -60,7 +62,7 @@ class DATA:
         return s1/len(ys) < s2/len(ys)
 
     def dist(self, row1, row2, cols=None):  #注意调用顺序
-        if cols == None:
+        if cols is None:
             cols = self.cols.x
 
         n, d = 0, 0
@@ -87,7 +89,7 @@ class DATA:
         # return sorted(utils.fMap(rows, ))
 
     def half(self, cols=None, above=None, rows=None):
-        if rows == None:
+        if rows is None:
             rows = self.rows
 
         def project(row):
@@ -100,12 +102,12 @@ class DATA:
         A = above
         if above is None:
             A = utils.any(some)
-        B = self.around(A, None, some)[(the["Far"] *  len(rows))//1]["row"]
+        B = self.around(A, None, some)[int(the["Far"] * len(rows))//1]["row"]
         c = d(A, B)
         left, right = [], []
 
         for n, tmp in enumerate(utils.fSort(utils.fMap(rows, project), utils.lt("dist"))):
-            if n <= len(rows) // 2:
+            if n + 1 <= len(rows) // 2:
                 left.append(tmp["row"])
                 mid = tmp["row"]
             else:
@@ -119,29 +121,29 @@ class DATA:
         if minn is None:
             minn = len(rows) ** the["min"]
         if cols is None:
-            cols = self.cols
+            cols = self.cols.x
 
         node = self.clone(rows)
         if len(rows) > 2*minn:
-            left, right, node[2], node[3], node[4] = self.half(cols, above, rows) # node.A写法可能不对，可能是node[3]，下边也是
-            node[0] = self.cluster(node[2], left, minn, cols)
-            node[1] = self.cluster(node[3], right, minn, cols)
+            left, right, node.A, node.B, node.mid, others = node.half(cols, above, rows) # node.A写法可能不对，可能是node[3]，下边也是
+            node.left = node.cluster(node.A, left, minn, cols)
+            node.right = node.cluster(node.B, right, minn, cols)
 
         return node
 
-    def sway(self, above, rows=None, minn=None, cols=None):
-        if rows == None:
+    def sway(self, above=None, rows=None, minn=None, cols=None):
+        if rows is None:
             rows = self.rows
-        if minn == None:
-            minn = len(rows) ** the.min
-        if cols == None:
-            cols = self.cols
+        if minn is None:
+            minn = len(rows) ** the["min"]
+        if cols is None:
+            cols = self.cols.x
 
         node = self.clone(rows)
         if len(rows) > 2 * minn:
-            left, right, node[2], node[3], node[4] = self.half(cols, above, rows)
-            if self.better(node[3], node[2]):
-                left, right, node[2], node[3] = right, left, node[3], node[2]
-            node[0] = self.sway(node[2], left, minn, cols)
+            left, right, node.A, node.B, node.mid, others = self.half(cols, above, rows)
+            if self.better(node.B, node.A):
+                left, right, node.A, node.B = right, left, node.B, node.A
+            node.left = self.sway(node.A, left, minn, cols)
 
         return node

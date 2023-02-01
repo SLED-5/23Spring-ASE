@@ -11,8 +11,11 @@ Seed = 937162211
 def show(node, what, cols, nPlaces, lvl=0):
     if node:
         lvl = lvl or 0
-        print("| " * lvl + str(len(node.data.rows)) + "  ")
-        print("" if not node.left or lvl == 0 else o(node.data.stats("mid", node.data.cols.y, nPlaces)))
+        if node.left is None or lvl == 0:
+            print("| " * lvl + str(len(node.rows)) + "  ", end="")
+            print(o(node.stats("mid", node.cols.y, nPlaces)))
+        else:
+            print("| " * lvl + str(len(node.rows)) + "  ")
         show(node.left, what, cols, nPlaces, lvl + 1)
         show(node.right, what, cols, nPlaces, lvl + 1)
 
@@ -57,9 +60,14 @@ def fMap(t, fun):
 
 def fKap(t, fun):
     u = []
-    for k, v in t.items():
-        v, k = fun(k, v)
-    u[k or (1 + len(u))] = v
+    if type(t) == dict:
+        for k, v in t.items():
+            v, k = fun(k, v)
+            u[k or (1 + len(u))] = v
+    elif type(t) == list:
+        for v in t:
+            v = fun(v)
+            u.append(v)
 
     return u
 
@@ -161,6 +169,8 @@ def coerce(s):
             return val
 
     try:
+        if type(s) == float:
+            return s
         return int(s)
     except ValueError:
         try:

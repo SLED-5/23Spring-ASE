@@ -18,7 +18,9 @@ def main(options, help):
 	
 	saved, fails = {}, 0
 	b4 = {}
-	for k, v in config.cli(config.settings(help)).items():
+	curr_settings = config.settings(help)
+	config_cli = config.cli(curr_settings)
+	for k, v in config_cli.items():
 		options[k] = v
 		saved[k] = v
 	if options["help"]:
