@@ -75,7 +75,7 @@ def runTest():
 	eg('sym', "check syms", symEgFunc)
 	eg('num', "check nums", numEgFunc)
 	eg('data', "read DATA csv", dataEgFunc)
-	# eg('clone', "duplicate structure", cloneEgFunc)
+	eg('clone', "duplicate structure", cloneEgFunc)
 	eg('around', "sorting nearest neighbors", aroundEgFunc)
 	eg('half', "1-level bi-clustering", halfEgFunc)
 	eg('cluster', "N-level bi-clustering", clusterEgFunc)
