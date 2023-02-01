@@ -96,7 +96,7 @@ function map(t, fun,     u) --> t; map a function `fun`(v) over list (skip nil r
 function kap(t, fun,     u) --> t; map function `fun`(k,v) over list (skip nil results) 
   u={}; for k,v in pairs(t) do v,k=fun(k,v); u[k or (1+#u)]=v; end; return u end
 
-function sort(t, fun) --> t; return `t`,  sorted by `fun` (default= `<`)
+function (t, fun) --> t; return `t`,  sorted by `fun` (default= `<`)
   table.sort(t,fun); return t end
 
 function keys(t) --> ss; return list of table keys, sorted
