@@ -168,3 +168,4 @@ cython_debug/
 
 /test.lua
 /test.py
+/.vscode
