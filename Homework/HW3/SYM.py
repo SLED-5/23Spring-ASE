@@ -34,5 +34,8 @@ class SYM:
             e += fun(k/self.n)
         return -e
 
+    def rnd(self, x, n):
+        return x
+
     def dist(self, s1, s2):
         return s1 == "?" and s2 == "?" and 1 or (s1 == s2) and 0 or 1

@@ -113,9 +113,9 @@ class DATA:
             else:
                 right.append(tmp["row"])
 
-        return [left, right, A, B, mid, c]
+        return left, right, A, B, mid, c
 
-    def cluster(self, above=None, rows=None, minn=None, cols=None):
+    def cluster(self, rows=None, minn=None, cols=None, above=None):
         if rows is None:
             rows = self.rows
         if minn is None:
@@ -123,9 +123,9 @@ class DATA:
         if cols is None:
             cols = self.cols.x
 
-        node = self.clone(rows)
+        node = {"data": self.clone(rows)}
         if len(rows) > 2*minn:
-            left, right, node.A, node.B, node.mid, others = node.half(cols, above, rows) # node.A写法可能不对，可能是node[3]，下边也是
+            left, right, node.A, node.B, node.mid = self.half(cols, above, rows) # node.A写法可能不对，可能是node[3]，下边也是
             node.left = node.cluster(node.A, left, minn, cols)
             node.right = node.cluster(node.B, right, minn, cols)
         return node
@@ -140,7 +140,7 @@ class DATA:
 
         node = self.clone(rows)
         if len(rows) > 2 * minn:
-            left, right, node.A, node.B, node.mid, others = self.half(cols, above, rows)
+            left, right, node.A, node.B, node.mid = self.half(cols, above, rows)
             if self.better(node.B, node.A):
                 left, right, node.A, node.B = right, left, node.B, node.A
             node.left = self.sway(node.A, left, minn, cols)

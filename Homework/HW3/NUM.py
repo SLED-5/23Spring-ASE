@@ -38,8 +38,8 @@ class NUM:
         n1, n2 = self.norm(n1), self.norm(n2)
 
         if n1 == "?":
-            n1 = n2 < 0.5 and 1 or 0
+            n1 = (n2 < 0.5) and 1 or 0
         if n2 == "?":
-            n2 = n1 < 0.5 and 1 or 0
+            n2 = (n1 < 0.5) and 1 or 0
 
         return abs(n1 - n2)
