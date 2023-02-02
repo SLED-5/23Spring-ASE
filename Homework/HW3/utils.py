@@ -20,7 +20,7 @@ def show(node, what, cols, nPlaces, lvl=0):
         show(node.right, what, cols, nPlaces, lvl + 1)
 
 
-def rint(lo, hi):
+def rint(lo, hi=None):
     return math.floor(0.5 + rand(lo, hi))
 
 
@@ -105,7 +105,7 @@ def fKeys(t):
 
 # Randomly return one item
 def any(t):
-    return t[rint(0, max(0, len(t) - 1))]
+    return t[rint(max(0, len(t) - 1))]
 
 # Randomly return some items
 def many(t, n):
