@@ -65,17 +65,14 @@ def halfEgFunc():
 
 def clusterEgFunc():
 	data = DATA(config.the["file"])
-	# utils.show(data.clustet(), "mid", data.clos.y, 0)
 	utils.show(data.cluster(), "mid", data.cols.y, 1)
 	return True
 
 
 def optimizeEgFunc():
 	data = DATA(config.the["file"])
-	# utils.show(data.sway(), "mid", data.clos.y, 0)
 	utils.show(data.sway(), "mid", data.cols.y, 1)
 	return True
-
 
 def runTest():
 	eg('the', "show settings", packedOO)
