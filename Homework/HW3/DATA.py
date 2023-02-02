@@ -1,12 +1,8 @@
-"""
-diff: Line 143 - 205
-"""
 import copy
+import utils
 
 from COLS import *
 from ROW import *
-import utils
-# from eg import the
 from config import the
 class DATA:
     def __init__(self, src):
@@ -20,7 +16,6 @@ class DATA:
             utils.fcsv(src, fun)
         else:
             self.cols = COLS(src)
-            # utils.fMap(src or {}, fun)
 
     def add(self, t):
         if self.cols:
@@ -61,7 +56,7 @@ class DATA:
 
         return s1/len(ys) < s2/len(ys)
 
-    def dist(self, row1, row2, cols=None):  #注意调用顺序
+    def dist(self, row1, row2, cols=None):
         if cols is None:
             cols = self.cols.x
 
@@ -77,18 +72,11 @@ class DATA:
     def around(self, row1, cols=None, rows=None):
         if rows is None:
             rows = self.rows
-        # if cols == None:
-        #     cols = self.cols
         def fun(row2):
             return {"row": row2, "dist": self.dist(row1, row2, cols)}
 
         # d = utils.fMap(rows, fun)
         return utils.fSort(utils.fMap(rows, fun), utils.lt("dist"))
-        # return dict(sorted(d.items(), key=lambda x: x[1]))    # 最后可能要改，看utils怎么写的吧，逻辑是这样的, line 98也是
-        # if rows == None:
-        #     rows = self.rows
-        #
-        # return sorted(utils.fMap(rows, ))
 
     def half(self, rows=None, cols=None, above=None):
         if rows is None:

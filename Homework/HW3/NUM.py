@@ -28,7 +28,6 @@ class NUM:
             return x
         return utils.rnd(x,n)
 
-    # 1E-32不确定，我推测是e**-32 -> Python also supports this thing
     def norm(self, n):
         return n == "?" and n or (n - self.lo)/(self.hi - self.lo + 1E-32)
 
