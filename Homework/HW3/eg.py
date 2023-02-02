@@ -47,9 +47,11 @@ def cloneEgFunc():
 def aroundEgFunc():
 	data = DATA(config.the["file"])
 	print(0, 0, utils.o(data.rows[0].cells))
-	for n,t in enumerate(data.around(data.rows[0])):
-		if n % 50 == 0:
+	tmp_data = data.around(data.rows[0])
+	for n,t in enumerate(tmp_data):
+		if (n + 1) % 50 == 0:
 			print(n, utils.rnd(t["dist"], 2), utils.o(t["row"].cells))
+	return True
 
 def halfEgFunc():
 	data = DATA(config.the["file"])
@@ -58,16 +60,21 @@ def halfEgFunc():
 	print(utils.o(A.cells), c)
 	print(utils.o(mid.cells))
 	print(utils.o(B.cells))
+	return True
+
 
 def clusterEgFunc():
 	data = DATA(config.the["file"])
 	# utils.show(data.clustet(), "mid", data.clos.y, 0)
 	utils.show(data.cluster(), "mid", data.cols.y, 1)
+	return True
+
 
 def optimizeEgFunc():
 	data = DATA(config.the["file"])
 	# utils.show(data.sway(), "mid", data.clos.y, 0)
 	utils.show(data.sway(), "mid", data.cols.y, 1)
+	return True
 
 
 def runTest():

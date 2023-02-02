@@ -75,16 +75,25 @@ def fKap(t, fun):
 def fSort(t, fun):
     # if type(t) == dict:
     # t.sort(key=fun)
-    sorted(t, key=functools.cmp_to_key(fun))
+    return sorted(t, key=functools.cmp_to_key(fun))
     # elif type(t) == list:
     #     t.sort(key=fun)
-    return t
+    # return t
+
 
 # Return a function that sorts ascending on 'x'
 def lt(x):
     def fun(a, b):
-        return a[x] < b[x]
+        # print("compare " + str(a[x]) + " and " + str(b[x]))
+        if a[x] < b[x]:
+            return -1
+        elif a[x] > b[x]:
+            return 1
+        else:
+            return 0
+
     return fun
+
 
 def push(t, x):
     t.append(x)

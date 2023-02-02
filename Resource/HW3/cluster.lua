@@ -357,7 +357,8 @@ eg("clone", "duplicate structure", function(     data1,data2)
 eg("around", "sorting nearest neighbors", function(     data)
   data=DATA(the.file)
   print(0,0,o(data.rows[1].cells))
-  for n,t in   pairs(data:around(data.rows[1])) do
+  local tmp = data:around(data.rows[1])
+  for n,t in   pairs(tmp) do
     if n %50 ==0 then print(n, rnd(t.dist,2) ,o(t.row.cells)) end end end)
 
 eg("half", "1-level bi-clustering", function(     data)
