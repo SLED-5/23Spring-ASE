@@ -11,7 +11,8 @@ Seed = 937162211
 def show(node, what, cols, nPlaces, lvl=0):
     if node:
         lvl = lvl or 0
-        if node.left is None or lvl == 0:
+        # if node.left is None or lvl == 0:
+        if not node.left or lvl == 0:
             print("| " * lvl + str(len(node.rows)) + "  ", end="")
             print(o(node.stats("mid", node.cols.y, nPlaces)))
         else:

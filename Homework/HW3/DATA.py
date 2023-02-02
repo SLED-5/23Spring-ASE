@@ -90,7 +90,7 @@ class DATA:
         #
         # return sorted(utils.fMap(rows, ))
 
-    def half(self, cols=None, above=None, rows=None):
+    def half(self, rows=None, cols=None, above=None):
         if rows is None:
             rows = self.rows
 
@@ -117,7 +117,7 @@ class DATA:
 
         return [left, right, A, B, mid, c]
 
-    def cluster(self, above=None, rows=None, minn=None, cols=None):
+    def cluster(self, rows=None, minn=None, cols=None, above=None):
         if rows is None:
             rows = self.rows
         if minn is None:
@@ -127,9 +127,9 @@ class DATA:
 
         node = self.clone(rows)
         if len(rows) > 2*minn:
-            left, right, node.A, node.B, node.mid, others = node.half(cols, above, rows) # node.A写法可能不对，可能是node[3]，下边也是
-            node.left = node.cluster(node.A, left, minn, cols)
-            node.right = node.cluster(node.B, right, minn, cols)
+            left, right, node.A, node.B, node.mid, others = node.half(rows, cols, above) # node.A写法可能不对，可能是node[3]，下边也是
+            node.left = node.cluster(left, minn, cols, node.A)
+            node.right = node.cluster(right, minn, cols, node.B)
 
         return node
 
@@ -143,7 +143,7 @@ class DATA:
 
         node = self.clone(rows)
         if len(rows) > 2 * minn:
-            left, right, node.A, node.B, node.mid, others = self.half(cols, above, rows)
+            left, right, node.A, node.B, node.mid, others = self.half(rows, cols, above)
             if self.better(node.B, node.A):
                 left, right, node.A, node.B = right, left, node.B, node.A
             node.left = self.sway(node.A, left, minn, cols)
