@@ -22,12 +22,16 @@ def show(node, what, cols, nPlaces, lvl=0):
 
 
 def rint(lo, hi=None):
-    return math.floor(0.5 + rand(lo, hi))
+    i = rand(lo, hi)
+    print(str(i) + " -> " + str(math.floor(0.5 + i)))
+    return math.floor(0.5 + i)
 
 
-def rand(lo, hi):
+def rand(lo, hi=None):
     global Seed
-    lo, hi = lo or 0, hi or 1
+    lo = lo or 0
+    if hi is None:
+        hi = 1
     Seed = (16807 * Seed) % 2147483647
     return lo + (hi - lo) * Seed / 2147483647
 
@@ -74,26 +78,13 @@ def fKap(t, fun):
 
 
 def fSort(t, fun):
-    # if type(t) == dict:
-    # t.sort(key=fun)
-    return sorted(t, key=functools.cmp_to_key(fun))
-    # elif type(t) == list:
-    #     t.sort(key=fun)
-    # return t
+    return sorted(t, key = lambda sort:sort[fun])
+
 
 
 # Return a function that sorts ascending on 'x'
 def lt(x):
-    def fun(a, b):
-        # print("compare " + str(a[x]) + " and " + str(b[x]))
-        if a[x] < b[x]:
-            return -1
-        elif a[x] > b[x]:
-            return 1
-        else:
-            return 0
-
-    return fun
+    return x
 
 
 def push(t, x):
@@ -106,7 +97,8 @@ def fKeys(t):
 
 # Randomly return one item
 def any(t):
-    return t[rint(max(0, len(t) - 1))]
+    i = rint(len(t) - 1, 0)
+    return t[i]
 
 # Randomly return some items
 def many(t, n):
