@@ -95,7 +95,7 @@ class DATA:
             rows = self.rows
 
         def project(row):
-            return {"row": row, "dist": utils.cosine(d(row, A), d(row, B), c)}
+            return {"row": row, "dist": utils.cosine(d(row, A), d(row, B), c)[1]}
 
         def d(row1, row2):
             return self.dist(row1, row2, cols)
@@ -127,7 +127,7 @@ class DATA:
 
         node = self.clone(rows)
         if len(rows) > 2*minn:
-            left, right, node.A, node.B, node.mid, others = node.half(rows, cols, above) # node.A写法可能不对，可能是node[3]，下边也是
+            left, right, node.A, node.B, node.mid, others = node.half(rows, cols, above)
             node.left = node.cluster(left, minn, cols, node.A)
             node.right = node.cluster(right, minn, cols, node.B)
 

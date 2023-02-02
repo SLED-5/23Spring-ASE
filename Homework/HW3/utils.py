@@ -23,7 +23,6 @@ def show(node, what, cols, nPlaces, lvl=0):
 
 def rint(lo, hi=None):
     i = rand(lo, hi)
-    print(str(i) + " -> " + str(math.floor(0.5 + i)))
     return math.floor(0.5 + i)
 
 
@@ -78,13 +77,26 @@ def fKap(t, fun):
 
 
 def fSort(t, fun):
-    return sorted(t, key = lambda sort:sort[fun])
+    return sorted(t, key=functools.cmp_to_key(fun))
 
 
 
-# Return a function that sorts ascending on 'x'
+# Return the key string to sort on
 def lt(x):
-    return x
+    def fun(a, b):
+        try:
+            if a[x] < b[x]:
+                return -1
+            elif a[x] > b[x]:
+                return 1
+            else:
+                return 0
+        except TypeError:
+            # For debug purpose
+            print(a[x])
+            print(b[x])
+
+    return fun
 
 
 def push(t, x):
