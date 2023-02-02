@@ -28,7 +28,7 @@ class SYM:
 
     def div(self):
         def fun(p):
-            return p * math.log2(p)
+            return p * math.log(p, 2)
         e = 0
         for k in self.has.values():
             e += fun(k/self.n)

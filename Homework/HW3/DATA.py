@@ -128,7 +128,6 @@ class DATA:
             left, right, node.A, node.B, node.mid, others = node.half(cols, above, rows) # node.A写法可能不对，可能是node[3]，下边也是
             node.left = node.cluster(node.A, left, minn, cols)
             node.right = node.cluster(node.B, right, minn, cols)
-
         return node
 
     def sway(self, above=None, rows=None, minn=None, cols=None):
