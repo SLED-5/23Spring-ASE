@@ -28,9 +28,9 @@ class NUM:
             return x
         return utils.rnd(x,n)
 
-    # 1E-32不确定，我推测是e**-32
+    # 1E-32不确定，我推测是e**-32 -> Python also supports this thing
     def norm(self, n):
-        return n == "?" and n or (n - self.lo)/(self.hi - self.lo + math.exp(-32))
+        return n == "?" and n or (n - self.lo)/(self.hi - self.lo + 1E-32)
 
     def dist(self, n1, n2):
         if n1 == "?" and n2 == "?":
