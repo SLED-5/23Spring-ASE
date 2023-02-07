@@ -14,14 +14,14 @@ Seed = 937162211
 
 
 def show(node, what=None, cols=None, nPlaces=None, lvl=0):
-    if node:
-        lvl = lvl or 0
+    if node is not None:
+        # lvl = lvl or 0
         # if node.left is None or lvl == 0:
-        if not node.left or lvl == 0:
-            print("| " * lvl, end="")
+        print("|.." * lvl, end="")
+        if node.left is None:
             print(o(node.rows[-1].cells[-1]))
         else:
-            print("| " * lvl)
+            # print("|.." * lvl)
             print("%.f" % rnd(100 * node.c))
         show(node.left, what, cols, nPlaces, lvl + 1)
         show(node.right, what, cols, nPlaces, lvl + 1)
@@ -171,7 +171,8 @@ def o(t):
 
             if cnt < len(xs):
                 ret += " "
-
+    else:
+        return str(t)
     ret += "}"
 
     return ret
