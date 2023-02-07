@@ -228,7 +228,7 @@ def convert_to_json_key(match_obj):
 
 def doFile(filename):
     result_str = '{'
-    with open('C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\repgrid1.csv', newline='') as csvfile:
+    with open(filename, newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         start_flag = False
         key_pattern = re.compile(r" *.*=")
@@ -312,11 +312,11 @@ def repPlace(data):
     print("")
 
     for r, row in enumerate(data.rows):
-        c = chr(64 + r)
+        c = chr(65 + r)
         print(c, row.cells[-1])
         x, y = int(row.x * n // 1), int(row.y * n // 1)
         maxy = max(maxy, y + 1)
-        g[y + 1][x + 1] = c
+        g[y][x] = c
     print("")
 
     for y in range(maxy):
