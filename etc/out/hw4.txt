@@ -1,0 +1,50 @@
+gabrielzhang@Gabriels-MBP 23Spring-ASE % python3 /Users/gabrielzhang/23Spring-ASE/Homework/HW4/script.py -g all
+{:dump false :file ./etc/data/repgrid1.csv :go all :help false :p 2 :seed 937162211}
+✅ pass:the
+b4 {:a 1 :b {'c': 2, 'd': [3]}} 
+after {:a 1 :b {'c': 2, 'd': [10000]}}
+✅ pass:copy
+✅ pass:sym
+✅ pass:num
+74
+|..48
+|..|..ObjectOrientedSystems
+|..|..44
+|..|..|..ElectronicPublishing
+|..|..|..VisualProgramming
+|..65
+|..|..KnowledgeBasedSystems
+|..|..43
+|..|..|..InformationHighway
+|..|..|..VirtualReality
+74
+|..61
+|..|..DevelopmentTool:Application
+|..|..ConventionalSystem:IntelligentSystem
+|..41
+|..|..CommunicationTechnology:ApplicationTechnology
+|..|..TargetedOnInterface:TargetedOnOverallSystem
+
+A ElectronicPublishing
+B VirtualReality
+C MultimediaAndHypermedia
+D VisualProgramming
+E CrossPlatformGUIs
+F ObjectOrientedSystems
+G KnowledgeBasedSystems
+H IntelligentAgents
+I InformationHighway
+J BroadbandNetworks
+
+{E                           H            }
+{                                         }
+{                                         }
+{                                         }
+{                                         }
+{      D                                  }
+{                  G                      }
+{                                         }
+{      F                                  }
+{  A C     J                              }
+{              I                          }
+✅ pass:rep
