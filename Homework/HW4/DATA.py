@@ -83,20 +83,22 @@ class DATA:
             rows = self.rows
 
         def project(row):
-            return {"row": row, "dist": utils.cosine(d(row, A), d(row, B), c)[1]}
+            x, y = utils.cosine(self.dist(row, A), self.dist(row, B), c)
+            row.x = row.x or x
+            row.y = row.y or y
+            return {'row': row, 'x': x, 'y': y}
 
         def d(row1, row2):
             return self.dist(row1, row2, cols)
 
-        some = utils.many(rows, the["Sample"])
         A = above
         if above is None:
-            A = utils.any(some)
-        B = self.around(A, None, some)[int(the["Far"] * len(rows))//1]["row"]
+            A = utils.any(rows)
+        B = self.furthest(A, rows).row
         c = d(A, B)
         left, right = [], []
 
-        for n, tmp in enumerate(utils.fSort(utils.fMap(rows, project), utils.lt("dist"))):
+        for n, tmp in enumerate(utils.fSort(utils.fMap(rows, project), utils.lt("x"))):
             if n + 1 <= len(rows) // 2:
                 left.append(tmp["row"])
                 mid = tmp["row"]
@@ -105,35 +107,21 @@ class DATA:
 
         return [left, right, A, B, mid, c]
 
-    def cluster(self, rows=None, minn=None, cols=None, above=None):
+    def cluster(self, rows=None, cols=None, above=None):
         if rows is None:
             rows = self.rows
-        if minn is None:
-            minn = len(rows) ** the["min"]
+
         if cols is None:
             cols = self.cols.x
 
         node = self.clone(rows)
-        if len(rows) > 2*minn:
+        if len(rows) > 2:
             left, right, node.A, node.B, node.mid, others = node.half(rows, cols, above)
-            node.left = node.cluster(left, minn, cols, node.A)
-            node.right = node.cluster(right, minn, cols, node.B)
+            node.left = node.cluster(left, cols, node.A)
+            node.right = node.cluster(right, cols, node.B)
 
         return node
 
-    def sway(self, above=None, rows=None, minn=None, cols=None):
-        if rows is None:
-            rows = self.rows
-        if minn is None:
-            minn = len(rows) ** the["min"]
-        if cols is None:
-            cols = self.cols.x
-
-        node = self.clone(rows)
-        if len(rows) > 2 * minn:
-            left, right, node.A, node.B, node.mid, others = self.half(rows, cols, above)
-            if self.better(node.B, node.A):
-                left, right, node.A, node.B = right, left, node.B, node.A
-            node.left = self.sway(node.A, left, minn, cols)
-
-        return node
+    def furthest(self, row1, rows, cols):
+        t = self.around(row1, rows, cols)
+        return t[-1]
