@@ -17,7 +17,7 @@ def packedOO():
 
 def copyEgFunc():
 	t1 = {'a': 1, 'b': {'c': 2, 'd': [3]}}
-	t2 = utils.copy(t1)
+	t2 = utils.fCopy(t1)
 	t2['b']['d'][0] = 10000
 	print("b4", utils.o(t1), "\nafter", utils.o(t2))
 
@@ -36,11 +36,11 @@ def numEgFunc():
 	return num.mid() == 11 / 7 and utils.rnd(num.div()) == 0.787
 
 def repEgFunc():
-	utils.repgrid(config.the["file"])
+	utils.repGrid(config.the["file"])
 
 def runTest():
 	eg('the', "show settings", packedOO)
-	eg('copy',"check copy", copyEgFunc())
+	eg('copy',"check copy", copyEgFunc)
 	eg('sym', "check syms", symEgFunc)
 	eg('num', "check nums", numEgFunc)
-	eg('rep', "checking repgrid", repEgFunc())
+	eg('rep', "checking repgrid", repEgFunc)

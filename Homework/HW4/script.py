@@ -37,4 +37,4 @@ def main(options, help):
 				else:
 					print("✅ pass:" + what[0])
 					
-main(eg.the, config.help)
+main(config.the, config.help)

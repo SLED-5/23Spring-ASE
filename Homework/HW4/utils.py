@@ -3,6 +3,7 @@ import functools
 import math
 import re
 import csv
+import json
 
 from ROW import *
 from DATA import *
@@ -16,10 +17,11 @@ def show(node, what, cols, nPlaces, lvl=0):
         lvl = lvl or 0
         # if node.left is None or lvl == 0:
         if not node.left or lvl == 0:
-            print("| " * lvl + str(len(node.rows)) + "  ", end="")
-            print(o(node.stats("mid", node.cols.y, nPlaces)))
+            print("| " * lvl, end="")
+            print(o(node.data.rows[-1].cells[-1]))
         else:
-            print("| " * lvl + str(len(node.rows)) + "  ")
+            print("| " * lvl)
+            fmt("%.f", rnd(100 * node.c))
         show(node.left, what, cols, nPlaces, lvl + 1)
         show(node.right, what, cols, nPlaces, lvl + 1)
 
@@ -208,12 +210,55 @@ def fcsv(filename, *func):
             if (len(func) > 0):
                 func[0](converted)
 
+
+def convert_to_json_key(match_obj):
+    result_key = ""
+    if match_obj.group() is not None:
+        result_key = match_obj.group()
+        result_key = result_key.replace(" ", "")
+        result_key = result_key.replace("=", "")
+        result_key = "\"" + result_key + "\":"
+    return result_key
+
+
+def doFile(filename):
+    result_str = '{'
+    with open('C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\repgrid1.csv', newline='') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        start_flag = False
+        key_pattern = re.compile(r" *.*=")
+        for row in spamreader:
+            if start_flag:
+                curr_row = ', '.join(row)
+                new_row = re.sub(key_pattern, convert_to_json_key, curr_row)
+                result_str += new_row
+            else:
+                for col in row:
+                    if "return" in col:
+                        start_flag = True
+                        break
+        old = '{'
+        new = '['
+        result_str = new.join(result_str.rsplit(old))
+        result_str = old.join(result_str.split(new, 1))
+        old = '}'
+        new = ']'
+        result_str = new.join(result_str.rsplit(old))
+        result_str = old.join(result_str.rsplit(new, 1))
+        result_str = "\" \"".join(result_str.rsplit("_"))
+        result_str = "\"".join(result_str.rsplit("\'"))
+
+        # print(result_str)
+        data = json.loads(result_str)
+        return data
+
+
 def transpose(t):
     u = []
     for i in range(len(t[0])):
-        u[i] = []
+        u.append([])
         for j in range(len(t)):
-            u[i][j] = t[j][i]
+            u[i].append(t[j][i])
 
     return u
 
@@ -228,21 +273,22 @@ def repCols(cols):
     def fun(k, v):
         return "Num" + k
 
-    cols.insert(0, fKap(cols[1], fun))
-    cols[0][len(cols[1])]="thingX"
+    cols.insert(0, fKap(cols[0], fun))
+    cols[0][len(cols[0])]="thingX"
 
     return DATA(cols)    # ?
 
 def repRows(t, rows):
     rows = fCopy(rows)
     for j, s in enumerate(rows[-1]):
-        rows[1][j] = rows[1][j] + ":" + s
-    rows[-1] = None
+        rows[0][j] = str(rows[0][j]) + ":" + str(s)
+    # rows.remove(rows[-1])
+    del rows[-1]
     for n, row in enumerate(rows):
         if n == 0:
             row.append("thingX")
         else:
-            u = t.rows[len(t.rows)-n+2]
+            u = t["rows"][len(t["rows"])-n]
             row.append(u[-1])
 
     return DATA(rows)   # ?: 写法可能不对
