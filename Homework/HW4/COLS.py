@@ -1,4 +1,5 @@
-from NUM import *
+# from NUM import *
+import NUM
 from SYM import *
 import utils
 import re
@@ -14,7 +15,7 @@ class COLS:
             self.name = []
             self.name.append(t)
         for n, s in enumerate(self.name):
-            col = NUM(n, s) if re.search("^[A-Z]+", s) else SYM(n, s)
+            col = NUM.NUM(n, s) if re.search("^[A-Z]+", s) else SYM(n, s)
             utils.push(self.all, col)
             if not re.search("X$", s):
                 if re.search("!$", s):
@@ -25,6 +26,3 @@ class COLS:
         for t in [self.x, self.y]:
             for col in t:
                 col.add(row.cells[col.at])
-
-
-

@@ -12,16 +12,17 @@ cnt = 0
 # Numerics
 Seed = 937162211
 
-def show(node, what, cols, nPlaces, lvl=0):
+
+def show(node, what=None, cols=None, nPlaces=None, lvl=0):
     if node:
         lvl = lvl or 0
         # if node.left is None or lvl == 0:
         if not node.left or lvl == 0:
             print("| " * lvl, end="")
-            print(o(node.data.rows[-1].cells[-1]))
+            print(o(node.rows[-1].cells[-1]))
         else:
             print("| " * lvl)
-            fmt("%.f", rnd(100 * node.c))
+            print("%.f" % rnd(100 * node.c))
         show(node.left, what, cols, nPlaces, lvl + 1)
         show(node.right, what, cols, nPlaces, lvl + 1)
 
@@ -44,10 +45,11 @@ def rnd(n, nPlaces=3):
     mult = 10 ** nPlaces
     return math.floor(n * mult + 0.5) / mult
 
+
 def cosine(a, b, c):
-    x1 = (a**2 + c**2 - b**2) / (2 * c)
+    x1 = (a ** 2 + c ** 2 - b ** 2) / (2 * c)
     x2 = max(0, min(1, x1))
-    y = (a**2 - x2**2)**0.5
+    y = (a ** 2 - x2 ** 2) ** 0.5
     return x2, y
 
 
@@ -85,7 +87,6 @@ def fSort(t, fun):
     return sorted(t, key=functools.cmp_to_key(fun))
 
 
-
 # Return the key string to sort on
 def lt(x):
     def fun(a, b):
@@ -112,10 +113,12 @@ def fKeys(t):
     x = t.keys().sort()
     return x
 
+
 # Randomly return one item
 def any(t):
     i = rint(len(t) - 1, 0)
     return t[i]
+
 
 # Randomly return some items
 def many(t, n):
@@ -123,6 +126,7 @@ def many(t, n):
     for i in range(n):
         u.append(any(t))
     return u
+
 
 # Strings
 
@@ -262,21 +266,23 @@ def transpose(t):
 
     return u
 
+
 def repCols(cols):
     cols = fCopy(cols)
     for col in cols:
         col[-1] = col[0] + ":" + col[-1]
         for j in range(1, len(col)):
-            col[j-1] = col[j]
-        col[-1] = None
+            col[j - 1] = col[j]
+        del col[-1]
 
-    def fun(k, v):
-        return "Num" + k
+    def fun(k):
+        return "Num" + str(k)
 
     cols.insert(0, fKap(cols[0], fun))
-    cols[0][len(cols[0])]="thingX"
+    cols[0][len(cols[0]) - 1] = "thingX"
 
-    return DATA(cols)    # ?
+    return DATA(cols)  # ?
+
 
 def repRows(t, rows):
     rows = fCopy(rows)
@@ -288,31 +294,33 @@ def repRows(t, rows):
         if n == 0:
             row.append("thingX")
         else:
-            u = t["rows"][len(t["rows"])-n]
+            u = t["rows"][len(t["rows"]) - n]
             row.append(u[-1])
 
-    return DATA(rows)   # ?: 写法可能不对
+    return DATA(rows)  # ?: 写法可能不对
+
 
 def repPlace(data):
     n, g = 20, []
-    for i in range(n+1):
-        g[i] = []
-        for j in range(n+1):
-            g[i][j] = " "
+    for i in range(n + 1):
+        g.append([])
+        for j in range(n + 1):
+            g[i].append(" ")
 
     maxy = 0
     print("")
 
     for r, row in enumerate(data.rows):
-        c = chr(64+r)
+        c = chr(64 + r)
         print(c, row.cells[-1])
-        x, y = int(row.x*n//1), int(row.y*n//1)
-        maxy = max(maxy, y+1)
-        g[y+1][x+1] = c
+        x, y = int(row.x * n // 1), int(row.y * n // 1)
+        maxy = max(maxy, y + 1)
+        g[y + 1][x + 1] = c
     print("")
 
     for y in range(maxy):
         oo(g[y])
+
 
 def repGrid(sFile):
     t = doFile(sFile)
@@ -321,6 +329,7 @@ def repGrid(sFile):
     show(rows.cluster())
     show(cols.cluster())
     repPlace(rows)
+
 
 def fCopy(t):
     u = copy.deepcopy(t)

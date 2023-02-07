@@ -7,7 +7,7 @@ from config import the
 class DATA:
     def __init__(self, src):
         self.rows, self.cols = [], None
-        self.A, self.B, self.left, self.right, self.mid = None, None, None, None, None
+        self.A, self.B, self.left, self.right, self.mid, self.c = None, None, None, None, None, None
 
         def fun(x):
             self.add(x)
@@ -15,7 +15,8 @@ class DATA:
         if type(src) == str:
             utils.fcsv(src, fun)
         else:
-            self.cols = COLS(src)
+            utils.fMap(src, fun)
+            # self.cols = COLS(src)
 
     def add(self, t):
         if self.cols:
@@ -31,7 +32,7 @@ class DATA:
 
     def clone(self, *init):
         # return copy.deepcopy(self)
-        data = DATA(self.cols.name)
+        data = DATA([self.cols.name])
 
         def fun(x):
             data.add(x)
@@ -94,7 +95,7 @@ class DATA:
         A = above
         if above is None:
             A = utils.any(rows)
-        B = self.furthest(A, rows).row
+        B = self.furthest(A, rows)["row"]
         c = d(A, B)
         left, right = [], []
 
@@ -116,12 +117,12 @@ class DATA:
 
         node = self.clone(rows)
         if len(rows) > 2:
-            left, right, node.A, node.B, node.mid, others = node.half(rows, cols, above)
+            left, right, node.A, node.B, node.mid, node.c = node.half(rows, cols, above)
             node.left = node.cluster(left, cols, node.A)
             node.right = node.cluster(right, cols, node.B)
 
         return node
 
-    def furthest(self, row1, rows, cols):
-        t = self.around(row1, rows, cols)
+    def furthest(self, row1=None, rows=None, cols=None):
+        t = self.around(row1, cols, rows)
         return t[-1]
