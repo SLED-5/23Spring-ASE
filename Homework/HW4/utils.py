@@ -1,8 +1,11 @@
+import copy
 import functools
 import math
 import re
-from ROW import *
 import csv
+
+from ROW import *
+from DATA import *
 
 cnt = 0
 # Numerics
@@ -205,3 +208,74 @@ def fcsv(filename, *func):
             if (len(func) > 0):
                 func[0](converted)
 
+def transpose(t):
+    u = []
+    for i in range(len(t[0])):
+        u[i] = []
+        for j in range(len(t)):
+            u[i][j] = t[j][i]
+
+    return u
+
+def repCols(cols):
+    cols = fCopy(cols)
+    for col in cols:
+        col[-1] = col[0] + ":" + col[-1]
+        for j in range(1, len(col)):
+            col[j-1] = col[j]
+        col[-1] = None
+
+    def fun(k, v):
+        return "Num" + k
+
+    cols.insert(0, fKap(cols[1], fun))
+    cols[0][len(cols[1])]="thingX"
+
+    return DATA(cols)    # ?
+
+def repRows(t, rows):
+    rows = fCopy(rows)
+    for j, s in enumerate(rows[-1]):
+        rows[1][j] = rows[1][j] + ":" + s
+    rows[-1] = None
+    for n, row in enumerate(rows):
+        if n == 0:
+            row.append("thingX")
+        else:
+            u = t.rows[len(t.rows)-n+2]
+            row.append(u[-1])
+
+    return DATA(rows)   # ?: 写法可能不对
+
+def repPlace(data):
+    n, g = 20, []
+    for i in range(n+1):
+        g[i] = []
+        for j in range(n+1):
+            g[i][j] = " "
+
+    maxy = 0
+    print("")
+
+    for r, row in enumerate(data.rows):
+        c = chr(64+r)
+        print(c, row.cells[-1])
+        x, y = int(row.x*n//1), int(row.y*n//1)
+        maxy = max(maxy, y+1)
+        g[y+1][x+1] = c
+    print("")
+
+    for y in range(maxy):
+        oo(g[y])
+
+def repGrid(sFile):
+    t = doFile(sFile)
+    rows = repRows(t, transpose(t["cols"]))
+    cols = repCols(t["cols"])
+    show(rows.cluster())
+    show(cols.cluster())
+    repPlace(rows)
+
+def fCopy(t):
+    u = copy.deepcopy(t)
+    return u
