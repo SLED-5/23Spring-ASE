@@ -20,6 +20,7 @@ def copyEgFunc():
 	t2 = utils.fCopy(t1)
 	t2['b']['d'][0] = 10000
 	print("b4", utils.o(t1), "\nafter", utils.o(t2))
+	return True
 
 def symEgFunc():
 	sym = SYM(None, None)
@@ -37,6 +38,7 @@ def numEgFunc():
 
 def repEgFunc():
 	utils.repGrid(config.the["file"])
+	return True
 
 def runTest():
 	eg('the', "show settings", packedOO)

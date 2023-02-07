@@ -15,7 +15,7 @@ Seed = 937162211
 
 def show(node, what=None, cols=None, nPlaces=None, lvl=0):
     if node is not None:
-        # lvl = lvl or 0
+        lvl = lvl or 0
         # if node.left is None or lvl == 0:
         print("|.." * lvl, end="")
         if node.left is None:
