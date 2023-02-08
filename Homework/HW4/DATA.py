@@ -116,7 +116,7 @@ class DATA:
             cols = self.cols.x
 
         node = self.clone(rows)
-        if len(rows) > 2:
+        if len(rows) > 1:
             left, right, node.A, node.B, node.mid, node.c = node.half(rows, cols, above)
             node.left = node.cluster(left, cols, node.A)
             node.right = node.cluster(right, cols, node.B)

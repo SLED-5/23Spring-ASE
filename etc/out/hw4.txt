@@ -8,22 +8,38 @@ after {:a 1 :b {'c': 2, 'd': [10000]}}
 ✅ pass:num
 74
 |..48
-|..|..ObjectOrientedSystems
+|..|..48
+|..|..|..CrossPlatformGUIs
+|..|..|..ObjectOrientedSystems
 |..|..44
 |..|..|..ElectronicPublishing
-|..|..|..VisualProgramming
+|..|..|..44
+|..|..|..|..VisualProgramming
+|..|..|..|..MultimediaAndHypermedia
 |..65
-|..|..KnowledgeBasedSystems
+|..|..42
+|..|..|..IntelligentAgents
+|..|..|..KnowledgeBasedSystems
 |..|..43
 |..|..|..InformationHighway
-|..|..|..VirtualReality
+|..|..|..43
+|..|..|..|..VirtualReality
+|..|..|..|..BroadbandNetworks
 74
 |..61
-|..|..DevelopmentTool:Application
-|..|..ConventionalSystem:IntelligentSystem
+|..|..54
+|..|..|..ConventionalCommunication:NovelCommunication
+|..|..|..DevelopmentTool:Application
+|..|..43
+|..|..|..ConventionalSystem:IntelligentSystem
+|..|..|..OnlyActAsProgrammed:Semi-autonomous
 |..41
-|..|..CommunicationTechnology:ApplicationTechnology
-|..|..TargetedOnInterface:TargetedOnOverallSystem
+|..|..30
+|..|..|..HumanOrientedTool:SystemTool
+|..|..|..CommunicationTechnology:ApplicationTechnology
+|..|..49
+|..|..|..TargetedOnInterface:TargetedOnOverallSystem
+|..|..|..Multimedia:Programming
 
 A ElectronicPublishing
 B VirtualReality
