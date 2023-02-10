@@ -8,6 +8,19 @@ NC State
 
 **Group 26** repository
 
+## Index
+
+[Homework 1](https://github.com/SLED-5/23Spring-ASE/tree/main/Homework/HW1)
+
+[Homework 2](https://github.com/SLED-5/23Spring-ASE/tree/main/Homework/HW2)
+
+[Homework 3](https://github.com/SLED-5/23Spring-ASE/tree/main/Homework/HW3)
+
+[Homework 4](https://github.com/SLED-5/23Spring-ASE/tree/main/Homework/HW4)
+
+- Task 5 [Report](https://github.com/SLED-5/23Spring-ASE/tree/main/Homework/HW4/task5.md)
+
+
 ## Contributors
 
 Dong Li &emsp;[StoicLD](https://github.com/StoicLD)
