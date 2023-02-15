@@ -1,0 +1,20 @@
+local _ = " "
+return {
+ domain="what to watch on Streaming Platform",
+ cols={       {'BigNameCast', 2, 1, 1, 5, 5, 5, 5, 5, 1, 2, 'RisingStar'},
+            {'IntensivePlot', 1, 3, 1, 3, 2, 5, 4, 3, 1, 1, 'SlowPacedStory'},
+       {'ShortManyEspoides' , 2, 1, 1, 1, 3, 5, 3, 2, 2, 2, 'LongFewEspoides'},
+       {'PopularlyDiscussed', 5, 3, 2, 4, 4, 5, 3, 4, 5, 2, 'LessDiscussion'},
+              {'DiverseCast', 1, 4, 1, 1, 1, 1, 1, 5, 3, 1, 'LessDiversity'},
+        {'BetterWithFriends', 1, 1, 1, 1, 1, 1, 5, 5, 1, 1, 'BestToWatchSolo'}},
+rows={                      { _, _, _, _, _, _, _, _, _, 'MayorOfKingstown'},
+                            { _, _, _, _, _, _, _, _, 'SheHulk'},
+                            { _, _, _, _, _, _, _, 'LastStand'},
+                            { _, _, _, _, _, _, 'The90sShow'},
+                            { _, _, _, _, _,  'TedLasso'},
+                            { _, _, _, _,  'DearEdward'},
+                            { _, _, _,  'SnowGirl'},
+                            { _, _,  'Wednesday'},
+                            { _, 'Ginny&Georgia'},
+                            {'NewAmsterdam'}}
+}
