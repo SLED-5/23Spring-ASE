@@ -4,21 +4,24 @@ class NUM:
 
     def __init__(self, at, txt):
         self.at, self.txt = at or 0, txt or ""
-        self.n, self.mu, self.m2 = 0, 0, 0
-        self.lo, self.hi = float('inf'), float('-inf')
+        self.n = 0
+        self.lo, self.hi = float('inf'), -float('inf')
         self.w = self.txt.find("-$" ) and -1 or 1
         self.ok = True
         self.has = []
 
-    
-    def add(self,n):
-        if n != "?":
-            self.n += 1
-            d = n - self.mu
-            self.mu += d/self.n
-            self.m2 += d*(n - self.mu)
-            self.lo = min(n, self.lo)
-            self.hi = max(n, self.hi)
+    def add(self, x, n=None):
+        if x != "?":
+            n = n or 1
+            self.n += n
+            self.has[x] = n + (self.has[x] or 0)
+            if self.has[x] > self.most:
+                self.most, self.mode = self.has[x], x
+
+    def adds(self, col, t):
+        for x in t or []:
+            self.add(x)
+        return col
 
     def has(self):
         if not self.ok:
