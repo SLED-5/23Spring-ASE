@@ -62,6 +62,7 @@ def csvEgFunc():
     n = 0
     # not sure where's the t come from
     def fun(t):
+        nonlocal n
         n += len(t)
     utils.fcsv(config.the["file"], fun)
     return 3192 == n
