@@ -11,18 +11,21 @@ class NUM:
         self.ok = True
         self.has = []
 
-    def add(self, col, x, n):
+    def add(self, x, n=None):
         if x != "?":
             n = n or 1
-            col.n += n
+            self.n += n
 
-            col.lo, col.hi = min(x, col.lo), min(x, col.hi)
-            all = len(col.has)
-            pos = (all < the.Max and all + 1) or (utils.rand() < the.Max / col.n and utils.rint(1, all))
+            self.lo, self.hi = min(x, self.lo), min(x, self.hi)
+            num_all = len(self.has)
+            pos = (num_all < the['Max'] and num_all + 1) or (utils.rand() < the['Max'] / self.n and utils.rint(1, num_all))
 
             if pos:
-                col.has[pos] = x
-                col.ok = False
+                if pos >= num_all:
+                    self.has.append(x)
+                else:
+                    self.has[pos] = x
+                self.ok = False
 
     def adds(self, col, t):
         for x in t or []:

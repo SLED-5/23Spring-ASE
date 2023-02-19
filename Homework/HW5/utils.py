@@ -1,3 +1,4 @@
+import RANGE
 import copy
 import functools
 import math
@@ -32,7 +33,7 @@ def rint(lo, hi=None):
     return math.floor(0.5 + i)
 
 
-def rand(lo, hi=None):
+def rand(lo=None, hi=None):
     global Seed
     lo = lo or 0
     if hi is None:
@@ -146,7 +147,7 @@ def o(t):
             ret += " "
 
             if type(v) == bool:
-                v = "false"
+                v = str(v)
             else:
                 v = str(v)
             ret += v
@@ -268,68 +269,68 @@ def transpose(t):
     return u
 
 
-def repCols(cols):
-    cols = fCopy(cols)
-    for col in cols:
-        col[-1] = col[0] + ":" + col[-1]
-        for j in range(1, len(col)):
-            col[j - 1] = col[j]
-        del col[-1]
-
-    def fun(k):
-        return "Num" + str(k)
-
-    cols.insert(0, fKap(cols[0], fun))
-    cols[0][len(cols[0]) - 1] = "thingX"
-
-    return DATA(cols)  # ?
-
-
-def repRows(t, rows):
-    rows = fCopy(rows)
-    for j, s in enumerate(rows[-1]):
-        rows[0][j] = str(rows[0][j]) + ":" + str(s)
-    # rows.remove(rows[-1])
-    del rows[-1]
-    for n, row in enumerate(rows):
-        if n == 0:
-            row.append("thingX")
-        else:
-            u = t["rows"][len(t["rows"]) - n]
-            row.append(u[-1])
-
-    return DATA(rows)  # ?: 写法可能不对
-
-
-def repPlace(data):
-    n, g = 20, []
-    for i in range(n + 1):
-        g.append([])
-        for j in range(n + 1):
-            g[i].append(" ")
-
-    maxy = 0
-    print("")
-
-    for r, row in enumerate(data.rows):
-        c = chr(65 + r)
-        print(c, row.cells[-1])
-        x, y = int(row.x * n // 1), int(row.y * n // 1)
-        maxy = max(maxy, y + 1)
-        g[y][x] = c
-    print("")
-
-    for y in range(maxy):
-        oo(g[y])
-
-
-def repGrid(sFile):
-    t = doFile(sFile)
-    rows = repRows(t, transpose(t["cols"]))
-    cols = repCols(t["cols"])
-    show(rows.cluster())
-    show(cols.cluster())
-    repPlace(rows)
+# def repCols(cols):
+#     cols = fCopy(cols)
+#     for col in cols:
+#         col[-1] = col[0] + ":" + col[-1]
+#         for j in range(1, len(col)):
+#             col[j - 1] = col[j]
+#         del col[-1]
+#
+#     def fun(k):
+#         return "Num" + str(k)
+#
+#     cols.insert(0, fKap(cols[0], fun))
+#     cols[0][len(cols[0]) - 1] = "thingX"
+#
+#     return DATA(cols)  # ?
+#
+#
+# def repRows(t, rows):
+#     rows = fCopy(rows)
+#     for j, s in enumerate(rows[-1]):
+#         rows[0][j] = str(rows[0][j]) + ":" + str(s)
+#     # rows.remove(rows[-1])
+#     del rows[-1]
+#     for n, row in enumerate(rows):
+#         if n == 0:
+#             row.append("thingX")
+#         else:
+#             u = t["rows"][len(t["rows"]) - n]
+#             row.append(u[-1])
+#
+#     return DATA(rows)  # ?: 写法可能不对
+#
+#
+# def repPlace(data):
+#     n, g = 20, []
+#     for i in range(n + 1):
+#         g.append([])
+#         for j in range(n + 1):
+#             g[i].append(" ")
+#
+#     maxy = 0
+#     print("")
+#
+#     for r, row in enumerate(data.rows):
+#         c = chr(65 + r)
+#         print(c, row.cells[-1])
+#         x, y = int(row.x * n // 1), int(row.y * n // 1)
+#         maxy = max(maxy, y + 1)
+#         g[y][x] = c
+#     print("")
+#
+#     for y in range(maxy):
+#         oo(g[y])
+#
+#
+# def repGrid(sFile):
+#     t = doFile(sFile)
+#     rows = repRows(t, transpose(t["cols"]))
+#     cols = repCols(t["cols"])
+#     show(rows.cluster())
+#     show(cols.cluster())
+#     repPlace(rows)
 
 
 def fCopy(t):
@@ -346,8 +347,8 @@ def bins(cols, rowss):
                 if x != "?":
                     k = bin(col, x)
                     if k not in ranges:
-                        ranges[k] = RANGE(col["at"], col["txt"], x)
-                    extend(ranges[k], x, y)
+                        ranges[k] = RANGE.RANGE(col["at"], col["txt"], x)
+                        ranges[k].extend(x, y)
         ranges = sorted(map(ranges, itself), key=lambda r: r["lo"])
         out.append(col["isSym"] and ranges or mergeAny(ranges))
     return out
@@ -421,7 +422,7 @@ def cliffsDelta(ns1, ns2):
 def diffs(nums1, nums2):
     def fun(k, nums):
         return cliffsDelta(nums.has, nums2[k].has), nums.txt
-    return fKap(nums1, fun(k, nums))
+    return fKap(nums1, fun)
     
 def cells(s, t):
     t = []
@@ -467,10 +468,10 @@ def sayln(*args):
 
 # Should these be here?
 def norm(num, n):   # ?: 哪来的x
-    if x == "?":
-        return x
-    else:
-        return (n - num.lo)/(num.hi - num.lo + 1/float("inf"))
+    # if x == "?":
+    #     return x
+    # else:
+    return (n - num.lo)/(num.hi - num.lo + 1/float("inf"))
 
 def value():
     pass

@@ -1,5 +1,5 @@
-from SYM import *
-from NUM import *
+from SYM import SYM
+from NUM import NUM
 from DATA import *
 import config
 import utils
@@ -12,7 +12,8 @@ def go(key, xplain, fun):
     global egs
     eg_help += utils.fmt("  -g  {}\t{}\n", key, xplain)
     # lua code is : egs[1+#egs] = {key=key,fun=fun}
-    egs.append({'key': key, 'fun': fun})
+    egs[key] = fun
+    # egs.append({'key': key, 'fun': fun})
 
 def no(_,__,___):
     return True
@@ -32,18 +33,18 @@ def randEgFunc():
         utils.push(u, utils.rint(100))
     for k, v in enumerate(t):
         assert v == u[k]
-
+    return True
 
 def someEgfunc():
-    config.the.Max = 32
-    num1 = NUM(None, None)
+    config.the["Max"] = 32
+    num1 = NUM.NUM(None, None)
     for i in range(1, 10001):
         num1.add(i)
-    utils.oo(num1.has())
+    return utils.oo(num1.has)
 
 def numsEgFunc():
-    num1 = NUM(None, None)
-    num2 = NUM(None, None)
+    num1 = NUM.NUM(None, None)
+    num2 = NUM.NUM(None, None)
     # the rand function here needs at one para, but lua code is unclear
     for i in range(1, 10001):
         num1.add(utils.rand())
@@ -125,13 +126,13 @@ def swayEgFunc():
     best, rest = data.sway()
     # here not sure where the div come form
     print("\nall ", utils.o(data.stats()))
-    print("    ", utils.o(stats(data, div)))
-    print("\nbest", utils.o(stats(best)))
-    print("    ", utils.o(stats(best, div)))
-    print("\nrest", utils.o(stats(rest)))
-    print("    ", utils.o(stats(rest, div)))
-    print("\nall ~= best?", utils.o(diffs(best.cols.y, data.cols.y)))
-    print("best ~= rest?", utils.o(diffs(best.cols.y, rest.cols.y)))
+    print("    ", utils.o(data.stats(data.div, None)))
+    print("\nbest", utils.o(data.stats(best)))
+    print("    ", utils.o(data.stats(best, data.div)))
+    print("\nrest", utils.o(data.stats(rest)))
+    print("    ", utils.o(data.stats(rest, data.div)))
+    print("\nall ~= best?", utils.o(data.diffs(best.cols.y, data.cols.y)))
+    print("best ~= rest?", utils.o(data.diffs(best.cols.y, rest.cols.y)))
 
 def binsEgFunc():
     data = DATA.read(config.the["file"])
@@ -150,17 +151,17 @@ def binsEgFunc():
 
 def runTest():
     go('the', "show options", packedOO)
-    go('rand', "demo random number generation", randEgFunc())
-    go('some', "demo of reservoir sampling", someEgfunc())
-    go('nums', "demo of NUM", numsEgFunc())
-    go('syms', "demo SYMS", symsEgFunc())
-    go('csv', "reading csv files", csvEgFunc())
-    go('data', "showing data sets", dataEgFunc())
-    go('clone', "replicate structure of a DATA", cloneEgFunc())
-    go('cliffs', "stats tests", cliffsEgFunc())
-    go('dist', "distance test", distEgFunc())
-    go('half', "divide data in half", halfEgFunc())
-    go('tree', "make snd show tree of clusters", treeEgFunc())
-    go('sway', "optimizing", swayEgFunc())
-    go('bins', "find deltas between best and rest", binsEgFunc())
+    go('rand', "demo random number generation", randEgFunc)
+    go('some', "demo of reservoir sampling", someEgfunc)
+    go('nums', "demo of NUM", numsEgFunc)
+    go('syms', "demo SYMS", symsEgFunc)
+    go('csv', "reading csv files", csvEgFunc)
+    go('data', "showing data sets", dataEgFunc)
+    go('clone', "replicate structure of a DATA", cloneEgFunc)
+    go('cliffs', "stats tests", cliffsEgFunc)
+    go('dist', "distance test", distEgFunc)
+    go('half', "divide data in half", halfEgFunc)
+    go('tree', "make snd show tree of clusters", treeEgFunc)
+    go('sway', "optimizing", swayEgFunc)
+    go('bins', "find deltas between best and rest", binsEgFunc)
 

@@ -2,6 +2,8 @@ from COLS import *
 from config import the
 from SYM import *
 from NUM import *
+
+
 class DATA:
 
     def __init__(self):
@@ -15,12 +17,11 @@ class DATA:
 
             col.lo, col.hi = min(x, col.lo), min(x, col.hi)
             all = len(col.has)
-            pos = (all < the.Max and all+1) or (utils.rand() < the.Max/col.n and utils.rint(1, all))
+            pos = (all < the.Max and all + 1) or (utils.rand() < the.Max / col.n and utils.rint(1, all))
 
             if pos:
                 col.has[pos] = x
                 col.ok = False
-
 
     def row(self, data, t):
         if data.cols:
@@ -32,9 +33,10 @@ class DATA:
             data.cols = COLS(t)
 
         return data
+
     def read(self, sFile):
         data = DATA()
-        utils.fcsv(sFile, data)    # 源代码t依赖于新版的fcsv，建议新fcsv把DATA.row()拿过去用，然后入参为sFile和data
+        utils.fcsv(sFile, data)  # 源代码t依赖于新版的fcsv，建议新fcsv把DATA.row()拿过去用，然后入参为sFile和data
 
         return data
 
@@ -44,8 +46,8 @@ class DATA:
             self.row(data1, t)
         return data1
 
-    def stats(self, fun, nPlaces, cols=None):       # changed the order
-        if cols == None:
+    def stats(self, fun, nPlaces, cols=None):  # changed the order
+        if cols is None:
             cols = self.cols.y
 
         def func(k, col):
@@ -75,22 +77,22 @@ class DATA:
 
             return abs(n1 - n2)
 
-        d, n = 0, 1/float("inf")
-        for c in cols or self.cols.x:   # not sure it's list or dict, write as a list
+        d, n = 0, 1 / float("inf")
+        for c in cols or self.cols.x:  # not sure it's list or dict, write as a list
             n += 1
             d += dist1(c, t1[c.at], t2[c.at]) ** the["p"]
 
-        return (d/n) ** (1/the["p"])
+        return (d / n) ** (1 / the["p"])
 
     def better(self, row1, row2):
-        s1, s2, ys= 0, 0, self.cols.y
+        s1, s2, ys = 0, 0, self.cols.y
         for col in ys:
             x = col.norm(row1.cells[col.at])
             y = col.norm(row2.cells[col.at])
             s1 -= math.exp(col.w * (x - y) / len(ys))
             s2 -= math.exp(col.w * (y - x) / len(ys))
 
-        return s1/len(ys) < s2/len(ys)
+        return s1 / len(ys) < s2 / len(ys)
 
     def half(self, rows=None, cols=None, above=None):
         if rows is None:
@@ -101,15 +103,18 @@ class DATA:
 
         def gap(r1, r2):
             return self.dist(r1, r2, cols)
+
         def cos(a, b, c):
-            return (a**2 + c**2 - b**2) / (2*c)
+            return (a ** 2 + c ** 2 - b ** 2) / (2 * c)
+
         def proj(r):
-            return {'row': r, 'x': cos(gap(r,A), gap(r, B), c)}
+            return {'row': r, 'x': cos(gap(r, A), gap(r, B), c)}
+
         def func(r):
             return {'row': r, 'd': gap(r, A)}
 
         tmp = utils.fSort(utils.fMap(rows, func), utils.lt("d"))
-        far = tmp[int((len(tmp) * the["Far"])//1)]
+        far = tmp[int((len(tmp) * the["Far"]) // 1)]
 
         left, right = [], []
         for n, two in utils.fSort(utils.fMap(rows, proj), utils.lt("x")):
@@ -120,8 +125,8 @@ class DATA:
 
         return [left, right, A, B, c]
 
-    def tree(self, cols, above, rows=None):      # changed the order
-        if rows == None:
+    def tree(self, cols, above, rows=None):  # changed the order
+        if rows is None:
             rows = self.rows
 
         here = {'data': self.clone(rows)}
@@ -137,7 +142,7 @@ class DATA:
             if len(rows) <= len(self.rows) ** the["min"]:
                 return rows, utils.many(worse, the["rest"] * len(rows))
             else:
-                l, r, A, B, _ = self.half(rows, cols, above)    # ?: cols
+                l, r, A, B, _ = self.half(rows, None, above)  # ?: cols
                 if self.better(B, A):
                     l, r, A, B = r, l, B, A
 
@@ -150,4 +155,10 @@ class DATA:
         best, rest = worker(self.rows, [])
         return self.clone(best), self.clone(rest)
 
-
+    def div(col):
+        if type(col) == NUM:
+            return col.div()
+        elif type(col) == SYM:
+            return col.div()
+        print("error in data.div")
+        return 0

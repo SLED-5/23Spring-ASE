@@ -13,9 +13,9 @@ USAGE: lua bins.lua [OPTIONS] [-g ACTIONS]
 OPTIONS:
   -b  --bins    initial number of bins       = 16
   -c  --cliffs  cliff's delta threshold      = .147
-  -f  --file    data file                    = ../etc/data/auto93.csv
+  -f  --file    data file                    = C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\auto93.csv
   -F  --Far     distance to distant          = .95
-  -g  --go      start-up action              = nothing
+  -g  --go      start-up action              = all
   -h  --help    show help                    = false
   -H  --Halves  search space for clustering  = 512
   -m  --min     size of smallest cluster     = .5
@@ -514,7 +514,7 @@ function main(funs,the,help,    y,n,saved,k,val,ok)
   then os.exit(print(help)) end
   for _,pair in pairs(funs) do
     k = pair.key
-    if k:find(".*"..the.go..".*") then
+    if the.go == 'all' or k:find(".*"..the.go..".*") then
       for k,v in pairs(saved) do the[k]=v end
       Seed = the.seed
       math.randomseed(Seed)
