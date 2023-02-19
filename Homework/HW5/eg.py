@@ -148,7 +148,7 @@ def binsEgFunc():
 
 
 def runTest():
-	go('the', "show options", packedOO)
+    go('the', "show options", packedOO)
     go('rand', "demo random number generation", randEgFunc())
     go('some', "demo of reservoir sampling", someEgfunc())
     go('nums', "demo of NUM", numsEgFunc())
