@@ -4,8 +4,8 @@ import math
 import re
 import csv
 import json
+import sys
 
-from ROW import *
 from DATA import *
 
 cnt = 0
@@ -327,7 +327,6 @@ def repGrid(sFile):
     t = doFile(sFile)
     rows = repRows(t, transpose(t["cols"]))
     cols = repCols(t["cols"])
-    cols = repCols(t["cols"])
     show(rows.cluster())
     show(cols.cluster())
     repPlace(rows)
@@ -337,6 +336,136 @@ def fCopy(t):
     u = copy.deepcopy(t)
     return u
 
+def bins(cols, rowss):
+    out = []
+    for _, col in enumerate(cols):
+        ranges = {}
+        for y, rows in enumerate(rowss):
+            for _, row in enumerate(rows):
+                x, k = row[col["at"]]
+                if x != "?":
+                    k = bin(col, x)
+                    if k not in ranges:
+                        ranges[k] = RANGE(col["at"], col["txt"], x)
+                    extend(ranges[k], x, y)
+        ranges = sorted(map(ranges, itself), key=lambda r: r["lo"])
+        out.append(col["isSym"] and ranges or mergeAny(ranges))
+    return out
+
+def bin(col, x):
+    if x == "?" or col.isSym:
+        return x
+    tmp = (col.hi - col.lo)/(the.bins - 1)
+    return col.hi == col.lo and 1 or math.floor(x/tmp + .5)*tmp
+
+def mergeAny(ranges0):
+    def noGaps(t):
+        for j in range(1, len(t)):
+            t[j].lo = t[j - 1].hi
+            t[1].lo = -math.inf
+            t[len(t)].hi = math.inf
+            return t
+    ranges1, j = [], 1
+    left, right, y = None, None, None
+    while j < len(ranges0):
+        left, right = ranges0[j], ranges0[j + 1]
+        if right:
+            y = merge2(left.y, right.y)
+            if y is not None:
+                j += 1
+                left.hi, left.y = right.hi, y
+        ranges1.append(left)
+        j += 1
+    return noGaps(ranges0) if len(ranges0) == len(ranges1) else mergeAny(ranges1)
+
+def merge2(col1, col2):
+    new = merge(col1, col2)
+    if new.div() <= (col1.div() * col1.n + col2.div() * col2.n)/new.n:
+        return new
+
+def merge(col1, col2):
+    new = copy(col1)
+    if col1.isSym:
+        for x, n in enumerate(col2.has):
+            col1.add(new, x, n)
+    else:
+        for n in col2.has:
+            col2.add(new, n)
+        new.lo = min(col1.lo, col2.lo)
+        new.hi = max(col1.hi, col2.hi)
+    return new
+
+def itself(x):
+    return x
+
+def cliffsDelta(ns1, ns2):
+    if len(ns1 > 256):
+        ns1 = many(ns1, 256)
+    if len(ns2 > 256):
+        ns2 = many(ns2, 256)
+    if len(ns1) > 10 * len(ns2):
+        ns1 = many(ns1, 10 * len(ns2))
+    if len(ns2) > 10 * len(ns1):
+        ns2 = many(ns1, 10 * len(ns1))
+    
+    n, gt, lt = 0, 0, 0
+    for x in ns1:
+        for y in ns2:
+            n = n + 1
+            if x > y:
+                gt = gt + 1
+            if x < y:
+                lt = lt + 1
+    return abs(lt - gt)/n > the.cliffs
+
+def diffs(nums1, nums2):
+    def fun(k, nums):
+        return cliffsDelta(nums.has, nums2[k].has), nums.txt
+    return fKap(nums1, fun(k, nums))
+    
+def cells(s, t):
+    t = []
+    for s1 in s.split(','):
+        t.append(coerce(s1))
+    return t
+
+def lines(sFilename, fun):
+    src = open(sFilename)
+    while True:
+        s = src.readline()
+        if s:
+            fun(s)
+        else:
+            src.close()
+            return
+
+
+def per(t, p=0.5):
+    p = math.floor((p * len(t)) + 0.5)
+    return t[max(0, min(len(t), p-1))]
+
+def copy(t):
+    if not isinstance(t, dict) and not isinstance(t, list):
+        return t
+    u = copy.deepcopy(t)
+
+def slice(t, go=1, stop=None, inc=1):
+    if go is not None and go < 0:
+        go = len(t) + go
+    if stop is not None and stop < 0:
+        stop = len(t) + stop
+    u = []
+    for j in range(go, stop or len(t), inc):
+        u.append(t[j])
+    return u
+
+def say(*args):
+    sys.stderr.write("".join(map(str, args)))
+
+def sayln(*args):
+    sys.stderr.write("".join(map(str, args)) + "\n")
+
+# Should these be here?
 def norm(num, n):   # ?: 哪来的x
     if x == "?":
         return x
