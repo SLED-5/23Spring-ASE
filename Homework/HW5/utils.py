@@ -327,6 +327,7 @@ def repGrid(sFile):
     t = doFile(sFile)
     rows = repRows(t, transpose(t["cols"]))
     cols = repCols(t["cols"])
+    cols = repCols(t["cols"])
     show(rows.cluster())
     show(cols.cluster())
     repPlace(rows)
@@ -335,3 +336,15 @@ def repGrid(sFile):
 def fCopy(t):
     u = copy.deepcopy(t)
     return u
+
+def norm(num, n):   # ?: 哪来的x
+    if x == "?":
+        return x
+    else:
+        return (n - num.lo)/(num.hi - num.lo + 1/float("inf"))
+
+def value():
+    pass
+
+def showTree():
+    pass
