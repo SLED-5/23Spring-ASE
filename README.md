@@ -9,6 +9,7 @@ NC State
 **Group 26** repository
 
 ## Index
+[**output**](https://github.com/SLED-5/23Spring-ASE/tree/main/etc/out)
 
 [Homework 1](https://github.com/SLED-5/23Spring-ASE/tree/main/Homework/HW1)
 
@@ -19,6 +20,8 @@ NC State
 [Homework 4](https://github.com/SLED-5/23Spring-ASE/tree/main/Homework/HW4)
 
 - Task 5 [Report](https://github.com/SLED-5/23Spring-ASE/blob/main/Homework/HW4/Task5.md)
+
+[Homework 5](https://github.com/SLED-5/23Spring-ASE/tree/main/Homework/HW5)
 
 
 ## Contributors
