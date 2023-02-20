@@ -7,7 +7,7 @@ class NUM:
         self.at, self.txt = at or 0, txt or ""
         self.n = 0
         self.lo, self.hi = float('inf'), -float('inf')
-        self.w = self.txt.find("-$") and -1 or 1
+        self.w = (self.txt.find("-") == len(self.txt) - 1) and -1 or 1
         self.ok = True
         self.has_list = []
 

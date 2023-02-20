@@ -76,21 +76,28 @@ class DATA:
         # if type(cols[0]) == NUM.NUM:
         #     return tmp, utils.fMap(cols, NUM.NUM.mid)
 
-    def dist(self, t1, t2, cols):
+    def dist(self, t1, t2, cols=None):
         def dist1(col, n1, n2):
             if n1 == "?" and n2 == "?":
                 return 1
-            n1, n2 = self.norm(n1), self.norm(n2)
+            if type(col) == SYM:
+                if n1 == n2:
+                    return 0
+                return 1
+            else:
+                n1, n2 = col.norm(n1), col.norm(n2)
+                if n1 == "?":
+                    n1 = (n2 < 0.5) and 1 or 0
+                if n2 == "?":
+                    n2 = (n1 < 0.5) and 1 or 0
 
-            if n1 == "?":
-                n1 = (n2 < 0.5) and 1 or 0
-            if n2 == "?":
-                n2 = (n1 < 0.5) and 1 or 0
+                return abs(n1 - n2)
 
-            return abs(n1 - n2)
+        if cols is None:
+            cols = self.cols.x
 
         d, n = 0, 1 / float("inf")
-        for c in cols or self.cols.x:  # not sure it's list or dict, write as a list
+        for c in cols:  # not sure it's list or dict, write as a list
             n += 1
             d += dist1(c, t1[c.at], t2[c.at]) ** the["p"]
 
@@ -109,9 +116,8 @@ class DATA:
     def half(self, rows=None, cols=None, above=None):
         if rows is None:
             rows = self.rows
-
         some = utils.many(rows, the["Halves"])
-        A, B, c = (the["Reuse"] and above) or utils.any(some)
+        A = (the["Reuse"] and above) or utils.any(some)
 
         def gap(r1, r2):
             return self.dist(r1, r2, cols)
@@ -125,11 +131,13 @@ class DATA:
         def func(r):
             return {'row': r, 'd': gap(r, A)}
 
-        tmp = utils.fSort(utils.fMap(rows, func), utils.lt("d"))
-        far = tmp[int((len(tmp) * the["Far"]) // 1)]
+        tmp = utils.fSort(utils.fMap(some, func), utils.lt("d"))
+        far = tmp[int((len(tmp) * the["Far"]) // 1) - 1]
+        B, c = far["row"], far["d"]
 
         left, right = [], []
-        for n, two in utils.fSort(utils.fMap(rows, proj), utils.lt("x")):
+        it_dict = utils.fSort(utils.fMap(rows, proj), utils.lt("x"))
+        for n, two in zip(range(len(it_dict)), it_dict):
             if n + 1 <= len(rows) // 2:
                 left.append(two["row"])
             else:
@@ -137,7 +145,7 @@ class DATA:
 
         return [left, right, A, B, c]
 
-    def tree(self, cols, above, rows=None):  # changed the order
+    def tree(self, cols=None, above=None, rows=None):  # changed the order
         if rows is None:
             rows = self.rows
 

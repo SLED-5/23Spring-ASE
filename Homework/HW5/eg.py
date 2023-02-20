@@ -122,30 +122,32 @@ def cliffsEgFunc():
 
 
 def distEgFunc():
-    data = DATA.read(config.the["file"])
-    num = NUM(None, None)
+    data = DATA.read(DATA(), config.the["file"])
+    num = NUM.NUM(None, None)
     for _, row in enumerate(data.rows):
         # attention: here maybe num.add(data.dist(row, data.rows[0]))
-        num.add(data.dist(row, data.rows[1]))
+        num.add(data.dist(row, data.rows[0]))
     utils.oo({'lo': num.lo, 'hi': num.hi, 'mid': utils.rnd(num.mid()), 'div': utils.rnd(num.div())})
-
+    return True
 
 def halfEgFunc():
-    data = DATA.read(config.the["file"])
+    data = DATA.read(DATA(), config.the["file"])
     left, right, A, B, c = data.half()
     print(len(left), len(right))
     l, r = DATA.clone(data, left), DATA.clone(data, right)
     print("l", utils.o(l.stats()))
     print("r", utils.o(r.stats()))
+    return True
 
 
 def treeEgFunc():
-    data = DATA.read(config.the["file"])
-    data.tree().showTree()
+    data = DATA.read(DATA(), config.the["file"])
+    utils.showTree(data.tree())
+    return True
 
 
 def swayEgFunc():
-    data = DATA.read(config.the["file"])
+    data = DATA.read(DATA(), config.the["file"])
     best, rest = data.sway()
     # here not sure where the div come form
     print("\nall ", utils.o(data.stats()))
@@ -159,7 +161,7 @@ def swayEgFunc():
 
 
 def binsEgFunc():
-    data = DATA.read(config.the["file"])
+    data = DATA.read(DATA(), config.the["file"])
     best, rest = data.sway()
     print("all", "", "", "", utils.o({'best': len(best.rows), 'rest': len(rest.rows)}))
     # here is not sure

@@ -443,7 +443,7 @@ def lines(sFilename, fun):
 
 def per(t, p=0.5):
     p = math.floor((p * len(t)) + 0.5)
-    return t[max(0, min(len(t), p-1))]
+    return t[max(0, min(len(t), p) - 1)]
 
 def copy(t):
     if not isinstance(t, dict) and not isinstance(t, list):
@@ -476,5 +476,17 @@ def norm(num, n):   # ?: 哪来的x
 def value():
     pass
 
-def showTree():
-    pass
+def showTree(tree, lvl = None):
+    if tree is not None:
+        if lvl is None:
+            lvl = 0
+        # print("[{0}]".format(len(tree["data"].rows)) + "|.." * lvl, end="")
+        if lvl == 0 or "left" not in tree or tree["left"] is None:
+            print("|.." * lvl + "[{0}]".format(len(tree["data"].rows)), end="")
+            print(o(tree["data"].stats()))
+        else:
+            print("|.." * lvl + "[{0}]".format(len(tree["data"].rows)))
+        if "left" in tree:
+            showTree(tree["left"], lvl + 1)
+        if "right" in tree:
+            showTree(tree["right"], lvl + 1)

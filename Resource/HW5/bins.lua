@@ -15,7 +15,7 @@ OPTIONS:
   -c  --cliffs  cliff's delta threshold      = .147
   -f  --file    data file                    = C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\auto93.csv
   -F  --Far     distance to distant          = .95
-  -g  --go      start-up action              = data
+  -g  --go      start-up action              = half
   -h  --help    show help                    = false
   -H  --Halves  search space for clustering  = 512
   -m  --min     size of smallest cluster     = .5
@@ -259,7 +259,9 @@ function half(data,  rows,cols,above)
   tmp  = sort(map(some,function(r) return {row=r, d=gap(r,A)} end ),lt"d")
   far  = tmp[(#tmp*the.Far)//1]
   B,c  = far.row, far.d
-  for n,two in pairs(sort(map(rows,proj),lt"x")) do
+  it_dict = sort(map(rows,proj),lt"x")
+  for n,two in pairs(it_dict) do
+    print(n - 1, o(two.row), two.x)
     push(n <= #rows/2 and left or right, two.row) end
   return left,right,A,B,c end
 
@@ -470,7 +472,9 @@ function kap(t, fun,     u)
 
 -- Return the `p`-ratio item in `t`; e.g. `per(t,.5)` returns the medium.
 function per(t,p) 
-  p=math.floor(((p or .5)*#t)+.5); return t[m.max(1,m.min(#t,p))] end
+  p=math.floor(((p or .5)*#t)+.5);
+  print(t[m.max(1,m.min(#t,p))])
+  return t[m.max(1,m.min(#t,p))] end
 
 -- Deep copy of a table `t`.
 function copy(t,    u) 
