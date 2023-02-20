@@ -152,12 +152,18 @@ def swayEgFunc():
     # here not sure where the div come form
     print("\nall ", utils.o(data.stats()))
     print("    ", utils.o(data.stats(data.div, None)))
-    print("\nbest", utils.o(data.stats(best)))
-    print("    ", utils.o(data.stats(best, data.div)))
-    print("\nrest", utils.o(data.stats(rest)))
-    print("    ", utils.o(data.stats(rest, data.div)))
-    print("\nall ~= best?", utils.o(data.diffs(best.cols.y, data.cols.y)))
-    print("best ~= rest?", utils.o(data.diffs(best.cols.y, rest.cols.y)))
+    print("\nbest", utils.o(best.stats()))
+    print("    ", utils.o(best.stats(best.div)))
+    print("\nrest", utils.o(rest.stats()))
+    print("    ", utils.o(rest.stats(rest.div)))
+
+    data_col_y_dict = utils.listToDict(data.cols.y)
+    best_col_y_dict = utils.listToDict(best.cols.y)
+    rest_col_y_dict = utils.listToDict(rest.cols.y)
+
+    print("\nall ~= best?", utils.o(utils.diffs(best_col_y_dict, data_col_y_dict)))
+    print("best ~= rest?", utils.o(utils.diffs(best_col_y_dict, rest_col_y_dict)))
+    return True
 
 
 def binsEgFunc():
@@ -165,14 +171,15 @@ def binsEgFunc():
     best, rest = data.sway()
     print("all", "", "", "", utils.o({'best': len(best.rows), 'rest': len(rest.rows)}))
     # here is not sure
-    for k, t in enumerate(data.cols.x.bins({'best': best.rows, 'rest': rest.rows})):
-        for _, range in enumerate(t):
-            if range.txt != b4:
-                print("")
-            b4 = range.txt
-            print(range.txt, range.lo, range.hi,
-                  utils.rnd(range.y.has().value(len(best.rows), len(rest.rows), "best")),
-                  utils.o(range.y.has()))
+    for k, t in enumerate(utils.bins(data.cols.x, ({'best': best.rows, 'rest': rest.rows}))):
+        for _, it_range in enumerate(t):
+            # if it_range.txt != b4:
+            #     print("")
+            b4 = it_range.txt
+            print(it_range.txt, it_range.lo, it_range.hi,
+                  utils.rnd(utils.value(it_range.y.has(), len(best.rows), len(rest.rows), "best")),
+                  utils.o(it_range.y.has()))
+    return True
 
 
 def runTest():

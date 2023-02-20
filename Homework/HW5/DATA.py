@@ -106,8 +106,8 @@ class DATA:
     def better(self, row1, row2):
         s1, s2, ys = 0, 0, self.cols.y
         for col in ys:
-            x = col.norm(row1.cells[col.at])
-            y = col.norm(row2.cells[col.at])
+            x = col.norm(row1[col.at])
+            y = col.norm(row2[col.at])
             s1 -= math.exp(col.w * (x - y) / len(ys))
             s2 -= math.exp(col.w * (y - x) / len(ys))
 
@@ -157,8 +157,8 @@ class DATA:
 
         return here
 
-    def sway(self, best, rest):
-        def worker(rows, worse, above):
+    def sway(self):
+        def worker(rows, worse, above=None):
             if len(rows) <= len(self.rows) ** the["min"]:
                 return rows, utils.many(worse, the["rest"] * len(rows))
             else:
@@ -175,10 +175,11 @@ class DATA:
         best, rest = worker(self.rows, [])
         return self.clone(best), self.clone(rest)
 
-    def div(col):
-        if type(col) == NUM:
+    def div(self, col):
+        if type(col) == NUM.NUM:
             return col.div()
         elif type(col) == SYM:
             return col.div()
-        print("error in data.div")
+        else:
+            print("error in data.div")
         return 0

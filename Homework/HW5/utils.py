@@ -73,9 +73,10 @@ def fMap(t, fun):
 def fKap(t, fun):
     u = []
     if type(t) == dict:
+        u = {}
         for k, v in t.items():
             v, k = fun(k, v)
-            u[k or (1 + len(u))] = v
+            u[k] = v
     elif type(t) == list:
         for v in t:
             v = fun(v)
@@ -92,6 +93,7 @@ def fSort(t, fun):
 def lt(x):
     def fun(a, b):
         try:
+            # return a[x] < b[x]
             if a[x] < b[x]:
                 return -1
             elif a[x] > b[x]:
@@ -339,37 +341,56 @@ def fCopy(t):
 
 def bins(cols, rowss):
     out = []
+    def rangeCmp(a, b):
+        if a.lo < b.lo:
+            return -1
+        elif a.lo > b.lo:
+            return 1
+        else:
+            return 0
     for _, col in enumerate(cols):
         ranges = {}
-        for y, rows in enumerate(rowss):
-            for _, row in enumerate(rows):
-                x, k = row[col["at"]]
+        for y, rows in rowss.items():
+            for row in rows:
+                x = row[col.at]
                 if x != "?":
                     k = bin(col, x)
                     if k not in ranges:
-                        ranges[k] = RANGE.RANGE(col["at"], col["txt"], x)
-                        ranges[k].extend(x, y)
-        ranges = sorted(map(ranges, itself), key=lambda r: r["lo"])
-        out.append(col["isSym"] and ranges or mergeAny(ranges))
+                        ranges[k] = RANGE.RANGE(col.at, col.txt, x, None)
+                    ranges[k].extend(x, y)
+        ranges_list = []
+        for k, v in ranges.items():
+            ranges_list.append(v)
+        ranges_list = fSort(ranges_list, rangeCmp)
+        # sorted(map(ranges, itself), key=lambda r: r["lo"])
+        if type(col) == SYM:
+            out.append(ranges_list)
+        else:
+            out.append(mergeAny(ranges_list))
     return out
 
 def bin(col, x):
-    if x == "?" or col.isSym:
+    if x == "?" or type(col) == SYM:
         return x
-    tmp = (col.hi - col.lo)/(the.bins - 1)
-    return col.hi == col.lo and 1 or math.floor(x/tmp + .5)*tmp
+    tmp = (col.hi - col.lo)/(the["bins"] - 1)
+    if col.hi == col.lo:
+        return 1
+    else:
+        return math.floor(x/tmp + .5)*tmp
 
 def mergeAny(ranges0):
     def noGaps(t):
         for j in range(1, len(t)):
             t[j].lo = t[j - 1].hi
-            t[1].lo = -math.inf
-            t[len(t)].hi = math.inf
-            return t
-    ranges1, j = [], 1
+        t[0].lo = -math.inf
+        t[len(t) - 1].hi = math.inf
+        return t
+    ranges1, j = [], 0
     left, right, y = None, None, None
     while j < len(ranges0):
-        left, right = ranges0[j], ranges0[j + 1]
+        left, right = ranges0[j], None
+        if j + 1 < len(ranges0):
+            right = ranges0[j + 1]
         if right:
             y = merge2(left.y, right.y)
             if y is not None:
@@ -386,17 +407,17 @@ def merge2(col1, col2):
 
 def merge(col1, col2):
     new = copy(col1)
-    if col1.isSym:
-        for x, n in enumerate(col2.has):
-            col1.add(new, x, n)
+    if type(col1) == SYM:
+        for x, n in col2.has_list.items():
+            new.add(x, n)
     else:
-        for n in col2.has:
-            col2.add(new, n)
+        for n in col2.has_list:
+            new.add(n)
         new.lo = min(col1.lo, col2.lo)
         new.hi = max(col1.hi, col2.hi)
     return new
 
-def itself(x):
+def itself(x, y=None):
     return x
 
 def cliffsDelta(ns1, ns2):
@@ -421,7 +442,7 @@ def cliffsDelta(ns1, ns2):
 
 def diffs(nums1, nums2):
     def fun(k, nums):
-        return cliffsDelta(nums.has, nums2[k].has), nums.txt
+        return cliffsDelta(nums.has_list, nums2[k].has_list), nums.txt
     return fKap(nums1, fun)
     
 def cells(s, t):
@@ -460,6 +481,16 @@ def slice(t, go=1, stop=None, inc=1):
         u.append(t[j])
     return u
 
+
+def listToDict(li):
+    if type(li) == list:
+        res = {}
+        for i in range(len(li)):
+            res[i] = li[i]
+        return res
+    else:
+        return li
+
 def say(*args):
     sys.stderr.write("".join(map(str, args)))
 
@@ -473,8 +504,18 @@ def norm(num, n):   # ?: 哪来的x
     # else:
     return (n - num.lo)/(num.hi - num.lo + 1/float("inf"))
 
-def value():
-    pass
+
+def value(has, nB, nR, sGoal):
+    sGoal, nB, nR = sGoal or True, nB or 1, nR or 1
+    b, r = 0, 0
+    for x, n in has.items():
+        if x == sGoal:
+            b = b + n
+        else:
+            r = r + n
+    b, r = b / (nB + 1 / math.inf), r / (nR + 1 / math.inf)
+    return b ** 2 / (b + r)
+
 
 def showTree(tree, lvl = None):
     if tree is not None:
