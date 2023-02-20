@@ -15,7 +15,7 @@ OPTIONS:
   -c  --cliffs  cliff's delta threshold      = .147
   -f  --file    data file                    = C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\auto93.csv
   -F  --Far     distance to distant          = .95
-  -g  --go      start-up action              = all
+  -g  --go      start-up action              = data
   -h  --help    show help                    = false
   -H  --Halves  search space for clustering  = 512
   -m  --min     size of smallest cluster     = .5
@@ -584,6 +584,7 @@ go("nums","demo of NUM", function(     num1,num2)
 go("syms","demo SYMS", function(    sym)
   sym=adds(SYM(), {"a","a","a","a","b","b","c"})
   print (mid(sym), rnd(div(sym))) 
+  this_res = rnd(div(sym))
   return 1.38 == rnd(div(sym)) end)
 
 go("csv","reading csv files", function(     n)

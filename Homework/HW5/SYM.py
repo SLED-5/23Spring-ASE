@@ -7,21 +7,21 @@ class SYM:
         """"Init"""
         self.at, self.txt = at or 0, txt or ""
         self.n = 0
-        self.has = {}
+        self.has_list = {}
         self.most, self.mode = 0, None
 
     def add(self, x, n=None):
         if x != "?":
             n = n or 1
             self.n += n
-            self.has[x] = n + (self.has[x] or 0)
-            if self.has[x] > self.most:
-                self.most, self.mode = self.has[x], x
+            self.has_list[x] = n + (0 if x not in self.has_list else self.has_list[x])
+            if self.has_list[x] > self.most:
+                self.most, self.mode = self.has_list[x], x
 
-    def adds(self, col, t):
+    def adds(self, t):
         for x in t or []:
             self.add(x)
-        return col
+        return self
 
     def mid(self):
         return self.mode
@@ -31,9 +31,12 @@ class SYM:
         def fun(p):
             return p * math.log(p, 2)
         e = 0
-        for k in self.has.values():
+        for k in self.has_list.values():
             e -= fun(k/self.n)
         return e
+
+    def has(self):
+        return self.has_list
 
     # def rnd(self, x, n):
     #     return x

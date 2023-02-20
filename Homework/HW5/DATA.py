@@ -1,7 +1,6 @@
 from COLS import *
 from config import the
-from SYM import *
-from NUM import *
+from SYM import SYM
 
 
 class DATA:
@@ -10,59 +9,72 @@ class DATA:
         self.rows, self.cols = [], None
         self.A, self.B, self.left, self.right, self.mid, self.c = None, None, None, None, None, None
 
-    def add(self, col, x, n):
-        if x != "?":
-            n = n or 1
-            col.n += n
+    # def add(self, col, x, n):
+    #     if x != "?":
+    #         n = n or 1
+    #         col.n += n
+    #
+    #         col.lo, col.hi = min(x, col.lo), min(x, col.hi)
+    #         all = len(col.has)
+    #         pos = (all < the.Max and all + 1) or (utils.rand() < the.Max / col.n and utils.rint(1, all))
+    #
+    #         if pos:
+    #             col.has[pos] = x
+    #             col.ok = False
 
-            col.lo, col.hi = min(x, col.lo), min(x, col.hi)
-            all = len(col.has)
-            pos = (all < the.Max and all + 1) or (utils.rand() < the.Max / col.n and utils.rint(1, all))
-
-            if pos:
-                col.has[pos] = x
-                col.ok = False
-
-    def row(self, data, t):
-        if data.cols:
-            data.rows.append(t)
-            for cs in [data.cols, data.cols.y]:
+    def row(self, t):
+        if self.cols:
+            self.rows.append(t)
+            for cs in [self.cols.x, self.cols.y]:
                 for c in cs:
-                    self.add(c, t[c.at])
+                    c.add(t[c.at])
+                    # self.add(c, t[c.at])
         else:
-            data.cols = COLS(t)
+            self.cols = COLS(t)
 
-        return data
+        return self
 
     def read(self, sFile):
         data = DATA()
-        utils.fcsv(sFile, data)  # 源代码t依赖于新版的fcsv，建议新fcsv把DATA.row()拿过去用，然后入参为sFile和data
+        utils.fcsv(sFile, data.row)  # 源代码t依赖于新版的fcsv，建议新fcsv把DATA.row()拿过去用，然后入参为sFile和data
 
         return data
 
     def clone(self, ts):
-        data1 = self.row(DATA(), self.cols.name)
+        data1 = DATA()
+        data1.row(self.cols.name)
         for t in ts or []:
-            self.row(data1, t)
+            data1.row(t)
         return data1
 
-    def stats(self, fun, nPlaces, cols=None):  # changed the order
+    def stats(self, fun=None, nPlaces=None, cols=None):  # changed the order
         if cols is None:
             cols = self.cols.y
 
-        def func(k, col):
-            if isinstance(col, SYM):
-                return utils.rnd((fun or SYM.mid), col.txt)
-            if isinstance(col, NUM):
-                return utils.rnd((fun or NUM.mid), col.txt)
+        def func(col):
+            if type(col) == SYM:
+                if fun is not None:
+                    return utils.rnd(fun(col)), col.txt
+                else:
+                    return utils.rnd(SYM.mid(col)), col.txt
+            if type(col) == NUM.NUM:
+                if fun is not None:
+                    return utils.rnd(fun(col)), col.txt
+                else:
+                    return utils.rnd(NUM.NUM.mid(col)), col.txt
 
         tmp = utils.fKap(cols, func)
-        tmp["N"] = len(self.rows)
+        res_dict = {}
+        for i in tmp:
+            # first is value, second is the key
+            res_dict[str(i[1])] = i[0]
+        res_dict["N"] = len(self.rows)
+        return res_dict
 
-        if isinstance(cols, SYM):
-            return tmp, utils.fMap(cols, SYM.mid)
-        if isinstance(cols, NUM):
-            return tmp, utils.fMap(cols, NUM.mid)
+        # if type(cols[0]) == SYM:
+        #     return tmp, utils.fMap(cols, SYM.mid)
+        # if type(cols[0]) == NUM.NUM:
+        #     return tmp, utils.fMap(cols, NUM.NUM.mid)
 
     def dist(self, t1, t2, cols):
         def dist1(col, n1, n2):

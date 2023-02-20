@@ -7,6 +7,7 @@ import utils
 egs = {}
 eg_help = ""
 
+
 def go(key, xplain, fun):
     global eg_help
     global egs
@@ -15,11 +16,14 @@ def go(key, xplain, fun):
     egs[key] = fun
     # egs.append({'key': key, 'fun': fun})
 
-def no(_,__,___):
+
+def no(_, __, ___):
     return True
+
 
 def packedOO():
     return utils.oo(config.the)
+
 
 def randEgFunc():
     # the rand's logics is not sure
@@ -35,12 +39,14 @@ def randEgFunc():
         assert v == u[k]
     return True
 
+
 def someEgfunc():
     config.the["Max"] = 32
     num1 = NUM.NUM(None, None)
     for i in range(1, 10001):
         num1.add(i)
-    return utils.oo(num1.has)
+    return utils.oo(num1.has())
+
 
 def numsEgFunc():
     num1 = NUM.NUM(None, None)
@@ -54,61 +60,75 @@ def numsEgFunc():
     print(1, utils.rnd(num2.mid()), utils.rnd(num2.div()))
     return 0.5 == utils.rnd(num1.mid()) and num1.mid() > num2.mid()
 
+
 def symsEgFunc():
-    sym = SYM.adds(SYM(None, None), ["a","a","a","a","b","b","c"])
+    sym = SYM.adds(SYM(None, None), ["a", "a", "a", "a", "b", "b", "c"])
     print(sym.mid(), utils.rnd(sym.div()))
     return 1.38 == utils.rnd(sym.div())
 
+
 def csvEgFunc():
     n = 0
+
     # not sure where's the t come from
     def fun(t):
         nonlocal n
         n += len(t)
+
     utils.fcsv(config.the["file"], fun)
     return 3192 == n
 
 
 # under here is all about DATA, needs to double-check after DATA done
 def dataEgFunc():
-    data = DATA.read(config.the["file"])
-    col = data.cols.x[1]
+    data = DATA.read(DATA(), config.the["file"])
+    col = data.cols.x[0]
     print(col.lo, col.hi, col.mid(), col.div())
     utils.oo(data.stats())
+    return True
+
 
 def cloneEgFunc():
-    data1 = DATA.read(config.the["file"])
+    data1 = DATA.read(DATA(), config.the["file"])
     data2 = DATA.clone(data1, data1.rows)
     utils.oo(data1.stats())
     utils.oo(data2.stats())
+    return True
+
 
 def cliffsEgFunc():
-    assert utils.cliffsDelta([8,7,6,2,5,8,7,3], [8,7,6,2,5,8,7,3]) == False
-    assert utils.cliffsDelta([8,7,6,2,5,8,7,3], [9,9,7,8,10,9,6]) == True
+    assert utils.cliffsDelta([8, 7, 6, 2, 5, 8, 7, 3], [8, 7, 6, 2, 5, 8, 7, 3]) is False
+    assert utils.cliffsDelta([8, 7, 6, 2, 5, 8, 7, 3], [9, 9, 7, 8, 10, 9, 6]) is True
     t1, t2 = [], []
     for i in range(1000):
         # same issue, here the rand should have at least one para
         utils.push(t1, utils.rand())
     for i in range(1000):
         utils.push(t2, utils.rand() ** 0.5)
-    assert utils.cliffsDelta(t1, t1) == False
-    assert utils.cliffsDelta(t1, t2) == True
+    assert utils.cliffsDelta(t1, t1) is False
+    assert utils.cliffsDelta(t1, t2) is True
 
     diff, j = False, 1.0
+
     def fun(x):
-        return x*j
+        return x * j
+
     while not diff:
-        t3 = utils.fMap(t1,fun)
+        t3 = utils.fMap(t1, fun)
         diff = utils.cliffsDelta(t1, t3)
         print(">", utils.rnd(j), diff)
         j *= 1.025
+    return True
+
+
 def distEgFunc():
     data = DATA.read(config.the["file"])
     num = NUM(None, None)
     for _, row in enumerate(data.rows):
         # attention: here maybe num.add(data.dist(row, data.rows[0]))
         num.add(data.dist(row, data.rows[1]))
-    utils.oo({'lo':num.lo, 'hi':num.hi, 'mid':utils.rnd(num.mid()), 'div':utils.rnd(num.div())})
+    utils.oo({'lo': num.lo, 'hi': num.hi, 'mid': utils.rnd(num.mid()), 'div': utils.rnd(num.div())})
+
 
 def halfEgFunc():
     data = DATA.read(config.the["file"])
@@ -118,9 +138,12 @@ def halfEgFunc():
     print("l", utils.o(l.stats()))
     print("r", utils.o(r.stats()))
 
+
 def treeEgFunc():
     data = DATA.read(config.the["file"])
     data.tree().showTree()
+
+
 def swayEgFunc():
     data = DATA.read(config.the["file"])
     best, rest = data.sway()
@@ -134,10 +157,11 @@ def swayEgFunc():
     print("\nall ~= best?", utils.o(data.diffs(best.cols.y, data.cols.y)))
     print("best ~= rest?", utils.o(data.diffs(best.cols.y, rest.cols.y)))
 
+
 def binsEgFunc():
     data = DATA.read(config.the["file"])
     best, rest = data.sway()
-    print("all","","","", utils.o({'best': len(best.rows), 'rest': len(rest.rows)}))
+    print("all", "", "", "", utils.o({'best': len(best.rows), 'rest': len(rest.rows)}))
     # here is not sure
     for k, t in enumerate(data.cols.x.bins({'best': best.rows, 'rest': rest.rows})):
         for _, range in enumerate(t):
@@ -164,4 +188,3 @@ def runTest():
     go('tree', "make snd show tree of clusters", treeEgFunc)
     go('sway', "optimizing", swayEgFunc)
     go('bins', "find deltas between best and rest", binsEgFunc)
-

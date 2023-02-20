@@ -42,7 +42,7 @@ def rand(lo=None, hi=None):
     return lo + (hi - lo) * Seed / 2147483647
 
 
-def rnd(n, nPlaces=3):
+def rnd(n, nPlaces=2):
     mult = 10 ** nPlaces
     return math.floor(n * mult + 0.5) / mult
 
@@ -400,9 +400,9 @@ def itself(x):
     return x
 
 def cliffsDelta(ns1, ns2):
-    if len(ns1 > 256):
+    if len(ns1) > 256:
         ns1 = many(ns1, 256)
-    if len(ns2 > 256):
+    if len(ns2) > 256:
         ns2 = many(ns2, 256)
     if len(ns1) > 10 * len(ns2):
         ns1 = many(ns1, 10 * len(ns2))
@@ -417,7 +417,7 @@ def cliffsDelta(ns1, ns2):
                 gt = gt + 1
             if x < y:
                 lt = lt + 1
-    return abs(lt - gt)/n > the.cliffs
+    return abs(lt - gt)/n > the["cliffs"]
 
 def diffs(nums1, nums2):
     def fun(k, nums):

@@ -7,24 +7,24 @@ class NUM:
         self.at, self.txt = at or 0, txt or ""
         self.n = 0
         self.lo, self.hi = float('inf'), -float('inf')
-        self.w = self.txt.find("-$" ) and -1 or 1
+        self.w = self.txt.find("-$") and -1 or 1
         self.ok = True
-        self.has = []
+        self.has_list = []
 
     def add(self, x, n=None):
         if x != "?":
             n = n or 1
             self.n += n
 
-            self.lo, self.hi = min(x, self.lo), min(x, self.hi)
-            num_all = len(self.has)
+            self.lo, self.hi = min(x, self.lo), max(x, self.hi)
+            num_all = len(self.has_list)
             pos = (num_all < the['Max'] and num_all + 1) or (utils.rand() < the['Max'] / self.n and utils.rint(1, num_all))
-
+            # print("pos: " + str(pos) + ", x: " + str(x))
             if pos:
-                if pos >= num_all:
-                    self.has.append(x)
+                if pos > num_all:
+                    self.has_list.append(x)
                 else:
-                    self.has[pos] = x
+                    self.has_list[pos - 1] = x
                 self.ok = False
 
     def adds(self, col, t):
@@ -34,11 +34,11 @@ class NUM:
 
     def has(self):  # ?: self.ok or 写个参数col, col.ok?
         if not self.ok:
-            self.has = sorted(self.has)
-        else:
-            self.ok = True
+            self.has_list = sorted(self.has_list)
+        # else:
+        self.ok = True
 
-        return self.has
+        return self.has_list
 
     def mid(self):
         return utils.per(self.has(), 0.5)
