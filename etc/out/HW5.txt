@@ -1,0 +1,83 @@
+{:Far 0.95 :Halves 512 :Max 512 :Reuse True :bins 16 :cliffs 0.147 :file /Users/gabrielzhang/23Spring-ASE/etc/data/auto93.csv :go all :help False :min 0.5 :p 2 :rest 4 :seed 937162211}
+✅ pass:the
+✅ pass:rand
+{15 687 1545 2022 2324 2693 2758 2883 3247 3533 4067 4168 4469 4570 5863 5907 5957 6147 6440 6727 7228 7517 7574 7598 7765 7955 8311 8379 8538 9052 9189 9323}
+✅ pass:some
+1 0.5 0.3
+1 0.26 0.32
+✅ pass:nums
+a 1.38
+✅ pass:syms
+✅ pass:csv
+3 8 4 1.5503875968992247
+{:Acc+ 15.5 :Lbs- 2800.0 :Mpg+ 20.0 :N 398}
+✅ pass:data
+{:Acc+ 15.5 :Lbs- 2800.0 :Mpg+ 20.0 :N 398}
+{:Acc+ 15.5 :Lbs- 2800.0 :Mpg+ 20.0 :N 398}
+✅ pass:clone
+> 1.0 False
+> 1.02 False
+> 1.05 False
+> 1.08 False
+> 1.1 False
+> 1.13 True
+✅ pass:cliffs
+{:div 0.26 :hi 0.8746495688429434 :lo 0.0 :mid 0.55}
+✅ pass:dist
+199 199
+l {:Acc+ 16.0 :Lbs- 2265.0 :Mpg+ 30.0 :N 199}
+r {:Acc+ 14.5 :Lbs- 3605.0 :Mpg+ 20.0 :N 199}
+✅ pass:half
+[398]{:Acc+ 15.5 :Lbs- 2800.0 :Mpg+ 20.0 :N 398}
+|..[199]
+|..|..[99]
+|..|..|..[49]
+|..|..|..|..[24]{:Acc+ 15.8 :Lbs- 2320.0 :Mpg+ 30.0 :N 24}
+|..|..|..|..[25]{:Acc+ 15.3 :Lbs- 2220.0 :Mpg+ 30.0 :N 25}
+|..|..|..[50]
+|..|..|..|..[25]{:Acc+ 16.4 :Lbs- 2575.0 :Mpg+ 30.0 :N 25}
+|..|..|..|..[25]{:Acc+ 15.5 :Lbs- 2620.0 :Mpg+ 30.0 :N 25}
+|..|..[100]
+|..|..|..[50]
+|..|..|..|..[25]{:Acc+ 16.0 :Lbs- 2228.0 :Mpg+ 30.0 :N 25}
+|..|..|..|..[25]{:Acc+ 16.4 :Lbs- 2070.0 :Mpg+ 30.0 :N 25}
+|..|..|..[50]
+|..|..|..|..[25]{:Acc+ 15.8 :Lbs- 2150.0 :Mpg+ 30.0 :N 25}
+|..|..|..|..[25]{:Acc+ 16.8 :Lbs- 2290.0 :Mpg+ 30.0 :N 25}
+|..[199]
+|..|..[99]
+|..|..|..[49]
+|..|..|..|..[24]{:Acc+ 12.5 :Lbs- 4042.0 :Mpg+ 10.0 :N 24}
+|..|..|..|..[25]{:Acc+ 12.0 :Lbs- 4354.0 :Mpg+ 10.0 :N 25}
+|..|..|..[50]
+|..|..|..|..[25]{:Acc+ 13.7 :Lbs- 3940.0 :Mpg+ 20.0 :N 25}
+|..|..|..|..[25]{:Acc+ 12.5 :Lbs- 4457.0 :Mpg+ 10.0 :N 25}
+|..|..[100]
+|..|..|..[50]
+|..|..|..|..[25]{:Acc+ 17.0 :Lbs- 2401.0 :Mpg+ 20.0 :N 25}
+|..|..|..|..[25]{:Acc+ 15.5 :Lbs- 3021.0 :Mpg+ 20.0 :N 25}
+|..|..|..[50]
+|..|..|..|..[25]{:Acc+ 16.7 :Lbs- 3265.0 :Mpg+ 20.0 :N 25}
+|..|..|..|..[25]{:Acc+ 17.6 :Lbs- 3425.0 :Mpg+ 20.0 :N 25}
+✅ pass:tree
+
+all  {:Acc+ 15.5 :Lbs- 2800.0 :Mpg+ 20.0 :N 398}
+     {:Acc+ 2.71 :Lbs- 887.21 :Mpg+ 7.75 :N 398}
+
+best {:Acc+ 15.3 :Lbs- 2130.0 :Mpg+ 40.0 :N 12}
+     {:Acc+ 3.76 :Lbs- 187.98 :Mpg+ 3.88 :N 12}
+
+rest {:Acc+ 15.0 :Lbs- 3085.0 :Mpg+ 20.0 :N 48}
+     {:Acc+ 2.71 :Lbs- 961.63 :Mpg+ 7.75 :N 48}
+
+all ~= best? {:Acc+ False :Lbs- False :Mpg+ False}
+best ~= rest? {:Acc+ True :Lbs- True :Mpg+ True}
+✅ pass:sway
+all    {:best 12 :rest 48}
+Clndrs -inf inf 0.5 {:best 12 :rest 48}
+Volume -inf inf 0.5 {:best 12 :rest 48}
+Model -inf inf 0.5 {:best 12 :rest 48}
+origin 1 1 0.0 {:rest 37}
+origin 2 2 0.96 {:best 12 :rest 2}
+origin 3 3 0.0 {:rest 9}
+✅ pass:bins
