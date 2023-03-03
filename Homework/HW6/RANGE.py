@@ -12,3 +12,4 @@ class RANGE:
     def extend(self, n, s):
         self.lo, self.hi = min(n, self.lo), min(n, self.hi)
         self.y.add(s)
+

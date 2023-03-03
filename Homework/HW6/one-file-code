@@ -1,0 +1,728 @@
+import argparse
+import sys
+from os import path
+import random
+
+is,help = {}, [[
+
+xpln: multi-goal semi-supervised explanation
+(c) 2023 Tim Menzies <timm@ieee.org> BSD-2
+
+USAGE: lua xpln.lua [OPTIONS] [-g ACTIONS]
+
+OPTIONS:
+  -b  --bins    initial number of bins       = 16
+  -c  --cliffs  cliff's delta threshold      = .147
+  -d  --d       different is over sd*d       = .35
+  -f  --file    data file                    = ../etc/data/auto93.csv
+  -F  --Far     distance to distant          = .95
+  -g  --go      start-up action              = nothing
+  -h  --help    show help                    = false
+  -H  --Halves  search space for clustering  = 512
+  -m  --min     size of smallest cluster     = .5
+  -M  --Max     numbers                      = 512
+  -p  --p       dist coefficient             = 2
+  -r  --rest    how many of rest to sample   = 4
+  -R  --Reuse   child splits reuse a parent pole = true
+  -s  --seed    random number seed           = 937162211
+]]
+
+magic = r"\n[%s]+[-][%S][%s]+[-][-]([%S]+)[^\n]+= ([%S]+)"
+
+b4 = {}
+for k, v in _ENV.items():
+    b4[k] = v
+
+-- Create a `NUM` or a `SYM`. Column
+-- names are a little language that
+-- e.g. makes `NUM`s if name starts in upper case; or
+-- e.g. makes goals if the name ends with
+-- the maximize (`+`) or minimize (`-`) or klass (`!`) symbol.
+def COL(n,s):
+   col = s.find"^[A-Z]" and NUM(n,s) or SYM(n,s)
+   col.isIgnored  = col.txt.find"X$"
+   col.isKlass    = col.txt.find"!$"
+   col.isGoal     = col.txt.find"[!+-]$"
+   return col
+
+-- Create a `NUM` to summarize a stream of numbers.
+def NUM(n,s):
+  return {at= n or 0, txt= s or "", n=0,
+          hi= -m.huge, lo= m.huge,
+          ok=true, has={},
+          w= (s or ""):find"-$" and -1 or 1}
+
+-- Create a `SYM` to summarize a stream of symbols.
+def SYM(n,s):
+  return {at=n or 0, txt=s or "", n=0,
+          mode=nil,  most=0,
+          isSym=true, has={}}
+
+-- Create a set of `NUM`s or `SYM`s columns.
+-- Once created, all cols are stored in `all`
+-- while the non-skipped cols are also stored as
+-- either `cols.x` independent input variables or
+-- `cols.y` dependent goal variables.
+def COLS(ss):
+  cols={names=ss, all={},x={},y={}}
+  for n,s in pairs(ss):
+    col = push(cols.all, COL(n,s))
+    if not col.isIgnored and col.isKlass then cols.klass = col end
+    if not col.isIgnored then push(col.isGoal and cols.y or cols.x, col) end
+  return cols
+
+
+-- Create a RANGE  that tracks the y dependent values seen in
+-- the range `lo` to `hi` some independent variable in column number `at` whose name is `txt`.
+-- Note that the way this is used (in the `bins` function, below)
+-- for  symbolic columns, `lo` is always the same as `hi`.
+def RANGE(at,txt,lo,hi):
+  return {at=at,txt=txt,lo=lo,hi=lo or hi or lo,y=SYM()} 
+
+-- Create a  RULE that groups `ranges` by their column id.
+-- Each group is a disjunction of its contents (and
+-- sets of groups are conjunctions).
+def RULE(ranges,maxSize,     t):
+  t={}
+  for _,range in pairs(ranges) do
+    t[range.txt] = t[range.txt] or {}
+    push(t[range.txt], {lo=range.lo,hi=range.hi,at=range.at}) end
+  return prune(t, maxSize) end
+
+
+  -- Create a `DATA` to contain `rows`, summarized in `cols`.
+  -- Optionally, is any `rows` are supplied, load those in.
+  -- Case [1]: `src` is a filename of a csv file
+  -- whose first row
+  -- are the comma-separate names processed by `COLS` (above).
+  -- into a new `DATA`. Every other row is stored in the DATA by
+  -- calling the
+  -- `row` function (defined below).
+  -- Case [2]: `src` is another data in which case we minic its
+  -- column structure.
+  def DATA(src,  rows,     data,add):
+    data= {rows=[],cols=None} # initially, no cols
+    add = lambda t: row(data,t)
+    if type(src)==str: csv(src,add)
+    else: data.cols=COLS(src.cols.names)
+    map(rows or [], add)
+    return data
+
+
+-- ## Update
+
+-- Update `data` with  row `t`. If `data.cols`
+-- does not exist, the use `t` to create `data.cols`.
+-- Otherwise, add `t` to `data.rows` and update the summaries in `data.cols`.
+-- To avoid updating skipped columns, we only iterate
+-- over `cols.x` and `cols.y`.
+def row(data,t):
+  if data.cols :
+    push(data.rows,t)
+    for _,cols in pairs{data.cols.x, data.cols.y} :
+      for _,col in pairs(cols) :
+	     add(col, t[col.at]) end end
+  else data.cols = COLS(t) end
+  return data end
+
+-- Update one COL with `x` (values from one cells of one row).
+-- Used  by (e.g.) the `row` and `adds` function.
+-- `SYM`s just increment a symbol counts.
+-- `NUM`s store `x` in a finite sized cache. When it
+-- fills to more than `is.Max`, then at probability
+-- `is.Max/col.n` replace any existing item
+-- (selected at random). If anything is added, the list
+-- may not longer be sorted so set `col.ok=false`.
+def add(col,x,  n,       sym,num):
+  def sym(t):
+    t[x] = n + (t[x] or 0)
+    if t[x] > col.most then col.most,col.mode = t[x],x end end
+  def num(t):
+    col.lo, col.hi = m.min(x,col.lo), m.max(x,col.hi)
+    if     #t < is.Max           then col.ok=false; t[#t + 1]=x
+    elif rand() < is.Max/col.n then col.ok=false; t[rint(1, #t)]=x end
+  ------------
+  if x != "?" :
+    n = n or 1
+    col.n = col.n + n
+    if col.isSym then sym(col.has) else num(col.has) end end end
+
+-- Update a COL with multiple items from `t`. This is useful when `col` is being
+-- used outside of some DATA.
+def adds(col,t):
+  for _,x in pairs(t or {}) : add(col,x) end; return col end
+
+-- Update a RANGE to cover `x` and `y`
+def extend(range,n,s):
+  range.lo = m.min(n, range.lo)
+  range.hi = m.max(n, range.hi)
+  add(range.y, s) end
+
+
+  def has(col):
+  if not col.isSym and not col.ok:
+      sort(col.has)
+  col.ok = True  # the invariant here is that "has" is ready to be shared.
+  return col.has
+
+def mid(col):
+  return col.isSym and col.mode or per(has(col), .5)
+
+def div(col):
+  if col.isSym:
+      e = 0
+      for _, n in pairs(col.has):
+          e = e-n/col.n*m.log(n/col.n, 2)
+      return e
+  else:
+      return (per(has(col), .9) - per(has(col), .1))/2.58
+
+def stats(data, fun=None, cols=None, nPlaces=None):
+  cols = cols or data.cols.y
+  tmp = kap(cols, lambda k, col: rnd((fun or mid)(col), nPlaces), col.txt)
+  tmp["N"] = #data.rows
+  return tmp, map(cols, mid)
+
+def norm(num, n):
+  return n == "?" and n or (n - num.lo)/(num.hi - num.lo + 1/m.huge)
+
+def value(has, nB=None, nR=None, sGoal=None):
+  sGoal, nB, nR = sGoal or True, nB or 1, nR or 1
+  b, r = 0, 0
+  for x, n in pairs(has):
+      if x == sGoal:
+          b = b + n
+      else:
+          r = r + n
+  b, r = b/(nB+1/m.huge), r/(nR+1/m.huge)
+  return b**2/(b+r)
+
+
+-- A query that returns the distances 0..1 between rows `t1` and `t2`.
+-- If any values are unknown, assume max distances.
+def dist(data,t1,t2,  cols,    d,dist1,sym,num):
+  def sym(x,y):
+    return x==y and 0 or 1 end
+  def num(x,y):
+    if x=="?" then x= y<.5 and 1 or 1 end
+    if y=="?" then y= x<.5 and 1 or 1 end
+    return m.abs(x-y) end
+  def dist1(col,x,y):
+    if x=="?" and y=="?" then return 1 end
+    return col.isSym and sym(x,y) or num(norm(col,x), norm(col,y))
+  end ------------- 
+  d, cols = 0, (cols or data.cols.x)
+  for _,col in pairs(cols) do
+    d = d + dist1(col, t1[col.at], t2[col.at])^is.p end
+  return (d/#cols)^(1/is.p) end
+
+
+  def better(data,row1,row2,    s1,s2,ys,x,y):
+  s1,s2,ys,x,y = 0,0,data.cols.y
+  for _,col in pairs(ys):
+    x  = norm(col, row1[col.at] )
+    y  = norm(col, row2[col.at] )
+    s1 = s1 - m.exp(col.w * (x-y)/#ys)
+    s2 = s2 - m.exp(col.w * (y-x)/#ys) end
+  return s1/#ys < s2/#ys end
+
+def betters(data,  n,    tmp):
+  tmp=sort(data.rows, lambda r1,r2: better(data,r1,r2))
+  return  n and slice(tmp,1,n), slice(tmp,n+1)  or tmp
+
+
+-- ## Clustering
+
+-- Cluster `rows` into two sets by
+-- dividing the data via their distance to two remote points.
+-- To speed up finding those remote points, only look at
+-- `some` of the data. Also, to avoid outliers, only look
+-- `is.Far=.95` (say) of the way across the space.
+
+def half(data,  rows,cols,above):
+  left,right,evals,far,gap,some,proj,cos,tmp,A,B,c = [],[],0,0,0,[],0,0,0,0,0
+  def gap(r1,r2): return dist(data, r1, r2, cols)
+  def cos(a,b,c): return (a**2 + c**2 - b**2)/(2*c)
+  def proj(r):    return {row=r, x=cos(gap(r,A), gap(r,B),c)}
+  rows = rows or data.rows
+  some = many(rows,is.Halves)
+  A    = (is.Reuse and above) or any(some)
+  tmp  = sort(map(some,function(r) return {row=r, d=gap(r,A)} end ),lt"d")
+  far  = tmp[(#tmp*is.Far)//1]
+  B,c  = far.row, far.d
+  for n,two in pairs(sort(map(rows,proj),lt"x")):
+    push(n <= #rows/2 and left or right, two.row) end
+  evals = is.Reuse and above and 1 or 2
+  return left,right,A,B,c,evals end
+
+-- Cluster, recursively, some `rows` by  dividing them in two, many times
+def tree(data,  rows,cols,above,     here):
+  rows = rows or data.rows
+  here = {data=DATA(data,rows)}
+  if #rows >= 2*(#data.rows)**is.min then
+    left,right,A,B = half(data, rows, cols, above)
+    here.left  = tree(data, left,  cols, A)
+    here.right = tree(data, right, cols, B) end
+  return here end
+
+-- Cluster can be displayed by this function.
+def showTree(tree,  lvl,post):
+  if tree:
+    lvl  = lvl or 0
+    io.write(fmt("%s[%s] ",("|.. "):rep(lvl), #(tree.data.rows)))
+    print((lvl==0 or not tree.left) and o(stats(tree.data)) or "")
+    showTree(tree.left, lvl+1)
+    showTree(tree.right,lvl+1) end end
+
+-- ## Optimization
+
+-- Recursively prune the worst half the data. Return
+-- the survivors and some sample of the rest.
+def sway(data,     worker,best,rest,c,evals):
+  def worker(rows,worse,  evals0,above):
+    if   len(rows) <= len(data.rows)^is.min:
+      return rows, many(worse, is.rest*len(rows)),evals0
+    else:
+      l,r,A,B,c,evals = half(data, rows, cols, above)
+      if better(data,B,A): l,r,A,B = r,l,B,A
+      map(r, function(row): push(worse,row) end)
+      return worker(l,worse,evals+evals0,A)
+  best,rest,evals = worker(data.rows,[],0)
+  return DATA(data,best), DATA(data,rest),evals
+
+
+-- ## Discretization
+
+-- Return RANGEs that distinguish sets of rows (stored in `rowss`).
+-- To reduce the search space,
+-- values in `col` are mapped to small number of `bin`s.
+-- For NUMs, that number is `is.bins=16` (say) (and after dividing
+-- the column into, say, 16 bins, then we call `mergeAny` to see
+-- how many of them can be combined with their neighboring bin).
+def bins(cols, rowss):
+    def with1Col(col):
+        n, ranges = withAllRows(col)
+        ranges = sort(map(ranges, itself), lt="lo")  # keyArray to numArray, sorted
+        if col.isSym:
+            return ranges
+        else:
+            return merges(ranges, n / is.bins, is.d * div(col))
+
+    def withAllRows(col):
+        def xy(x, y):
+            if x != "?":
+                n = n + 1
+                k = bin(col, x)
+                ranges[k] = ranges[k] or RANGE(col.at, col.txt, x)
+                extend(ranges[k], x, y)
+
+        n, ranges = 0, {}
+        for y, rows in rowss.items():
+            for row in rows:
+                xy(row[col.at], y)
+        return n, ranges
+
+    return map(cols, with1Col)
+
+-- Map `x` into a small number of bins. `SYM`s just get mapped
+-- to themselves but `NUM`s get mapped to one of `is.bins` values.
+-- Called by function `bins`.
+def bin(col,x):
+  if x=="?" or col.isSym: return x
+  tmp = (col.hi - col.lo)/(is.bins - 1)
+  return 1 if col.hi == col.lo else m.floor(x/tmp + .5)*tmp
+
+-- Given a sorted list of ranges, try fusing adjacent items
+-- (stopping when no more fuse-ings can be found). When done,
+-- make the ranges run from minus to plus infinity
+-- (with no gaps in between).
+def merges(ranges0,nSmall,nFar,     noGaps,try2Merge):
+  def noGaps(t):
+    for j in range(2,len(t)): t[j].lo = t[j-1].hi
+    t[1].lo  = -m.huge
+    t[len(t)].hi =  m.huge
+    return t
+  def try2Merge(left,right,j,     y):
+    y = merged(left.y, right.y, nSmall, nFar)
+    if y:
+      j = j+1 # next round, skip over right.
+      left.hi, left.y = right.hi, y
+    return j , left
+  ranges1,j,here = [],1
+  while j <= len(ranges0):
+    here = ranges0[j]
+    if j < len(ranges0): j,here = try2Merge(here, ranges0[j+1], j)
+    j=j+1
+    push(ranges1,here)
+  return len(ranges0)==len(ranges1) and noGaps(ranges0) or merges(ranges1,nSmall,nFar)
+
+
+-- If (1) the parts are too small or
+-- (2) the whole is as good (or simpler) than the parts,
+-- then return the merge.
+def merged(col1, col2, nSmall, nFar, new):
+  new = merge(col1, col2)
+  if nSmall and col1.n < nSmall or col2.n < nSmall: return new
+  if nFar and not col1.isSym and m.abs(mid(col1) - mid(col2)) < nFar: return new
+  if div(new) <= (div(col1) * col1.n + div(col2) * col2.n) / new.n: return new
+
+-- Merge two `cols`. Called by function `merged`.
+def merge(col1,col2,    new):
+  new = copy(col1)
+  if   col1.isSym:
+  then for x,n in pairs(col2.has) do add(new,x,n) end
+  else for _,n in pairs(col2.has) do add(new,n)   end
+       new.lo = m.min(col1.lo, col2.lo)
+       new.hi = m.max(col1.hi, col2.hi) 
+  return new
+
+-- ## Contrast Sets
+
+def xpln(data,best,rest,      maxSizes,tmp,v,score):
+  def v(has):
+    return value(has, len(best.rows), len(rest.rows), "best")
+  def score(ranges,       rule,bestr,restr):
+    rule = RULE(ranges,maxSizes)
+    if rule:
+      oo(showRule(rule))
+      bestr= selects(rule, best.rows)
+      restr= selects(rule, rest.rows)
+      if len(bestr) + len(restr) > 0:
+        return v({"best": len(bestr), "rest":len(restr)}),rule
+  tmp,maxSizes = {},{}
+  for _,ranges in bins(data.cols.x,{"best":best.rows, "rest":rest.rows}).items():
+    maxSizes[ranges[0].txt] = len(ranges)
+    print""
+    for range in ranges:
+      print(range.txt, range.lo, range.hi)
+      tmp.append({"range":range, "max":len(ranges),"val": v(range.y.has)})
+  rule,most=firstN(sort(tmp,gt"val"),score)
+  return rule,most
+
+def firstN(sortedRanges,scoreFun,           first,useful,most,out):
+  print""
+  map(sortedRanges,function(r) print(r.range.txt,r.range.lo,r.range.hi,rnd(r.val),o(r.range.y.has)))
+  first = sortedRanges[0].val
+  def useful(range):
+    if range.val>.05 and range.val> first/10: return range
+  sortedRanges = map(sortedRanges,useful) # reject  useless ranges
+  most,out = -1
+  for n in range(1,len(sortedRanges)):
+    tmp,rule = scoreFun(map(slice(sortedRanges,1,n),on"range"))
+    if tmp and tmp > most: out,most = rule,tmp
+  return out,most
+
+def  showRule(rule,    merges,merge,pretty):
+  def pretty(range):
+    return range.lo==range.hi and range.lo or {range.lo, range.hi}
+  def merges(attr,ranges):
+   return map(merge(sort(ranges,lt"lo")),pretty),attr
+  def merge(t0):
+    t,j, left,right=[],1
+    while j<=len(t0):
+      left,right = t0[j],t0[j+1]
+      if right and left.hi == right.lo: left.hi = right.hi; j=j+1
+      t.append({"lo":left.lo, "hi":left.hi})
+      j=j+1
+    return len(t0)==len(t) and t or merge(t)
+  return kap(rule,merges)
+
+def selects(rule,rows,    disjunction,conjunction):
+  def disjunction(ranges,row,    x):
+    for range in ranges:
+      lo, hi, at = range.lo, range.hi, range.at
+      x = row[at]
+      if x == "?"         : return True
+      if lo==hi and lo==x : return True
+      if lo<=x  and x< hi : return True
+    return False
+  def conjunction(row):
+    for ranges in rule.values():
+      if not disjunction(ranges,row): return False
+    return True
+  return map(rows, lambda r: conjunction(r) and r or None)
+
+-- ## Miscellaneous Support Code
+-- ### Meta
+
+-- Round numbers
+function rnd(n, nPlaces)
+    local mult = 10^(nPlaces or 2)
+    return math.floor(n * mult + 0.5) / mult end
+  
+-- Random number generation.
+Seed=937162211 -- seed
+function rint(nlo,nhi)  -- random ints
+return m.floor(0.5 + rand(nlo,nhi)) end
+
+function rand(nlo,nhi) -- random floats
+nlo, nhi = nlo or 0, nhi or 1
+Seed = (16807 * Seed) % 2147483647
+return nlo + (nhi-nlo) * Seed / 2147483647 end
+
+
+-- Non-parametric effect-size test
+--  M.Hess, J.Kromrey.
+--  Robust Confidence Intervals for Effect Sizes:
+--  A Comparative Study of Cohen's d and Cliff's Delta Under Non-normality and Heterogeneous Variances
+--  American Educational Research Association, San Diego, April 12 - 16, 2004
+--  0.147=  small, 0.33 =  medium, 0.474 = large; med --> small at .2385
+def cliffsDelta(ns1,ns2):
+    if len(ns1) > 256: ns1 = many(ns1,256)
+    if len(ns2) > 256: ns2 = many(ns2,256)
+    if len(ns1) > 10*len(ns2): ns1 = many(ns1,10*len(ns2))
+    if len(ns2) > 10*len(ns1): ns2 = many(ns2,10*len(ns1))
+    n,gt,lt = 0,0,0
+    for x in ns1:
+        for y in ns2:
+            n = n + 1
+            if x > y: gt = gt + 1
+            if x < y: lt = lt + 1
+    return abs(lt - gt)/n > is.cliffs
+
+-- Given two tables with the same keys, report if their
+-- values are different.
+def diffs(nums1,nums2):
+  return kap(nums1, lambda k,nums: cliffsDelta(nums['has'],nums2[k]['has']),nums['txt']) end
+
+-- ### String to thing
+
+-- Coerce string to boolean, int,float or (failing all else) strings.
+def coerce(s):
+    def fun(s1):
+        if s1=="true": return True
+        elif s1=="false": return False
+        return s1
+    return int(s) or float(s) or fun(s.strip())
+ 
+-- Split a string `s`  on commas.
+def cells(s):
+    return [coerce(s1) for s1 in s.split(",")]
+ 
+-- Run `fun` for all lines in a file.
+def lines(sFilename,fun):
+    with open(sFilename) as src:
+        for s in src:
+            fun(s)
+ 
+-- Run `fun` on the cells  in each row of a csv file.
+def csv(sFilename,fun):
+    lines(sFilename, lambda line: fun(cells(line)))
+
+-- ### Lists
+
+-- Push an item `x` onto  a list.
+-- Return a list, sorted on `fun`.
+-- Return a function sorting down on field `x`.
+-- Return a function sorting up on field `x`.
+-- Return one item at random.
+-- Return many items, selected at random.
+-- Map a function on  table (results in items 1,2,3...)
+push = lambda t,x: t.append(x) or x
+sort = lambda t,f: sorted(t,key=f)
+on   = lambda x:   lambda t: t[x]
+lt   = lambda x:   lambda a,b: a[x] < b[x]
+gt   = lambda x:   lambda a,b: a[x] > b[x]
+any  = lambda t:   t[randint(0,len(t)-1)]
+many = lambda t,n: [any(t) for i in range(n)]
+map  = lambda t,fun: [fun(v) for _,v in t]
+keys = lambda t:    sort(t,lambda k,_:k)
+
+-- Map a function on table (results in items key1,key2,...)
+def kap(t, fun):
+    u = {}
+    for k, v in t.items():
+        v, k = fun(k, v)
+        u[k or (1 + len(u))] = v
+    return u
+
+-- Return the `p`-ratio item in `t`; e.g. `per(t,.5)` returns the medium.
+def per(t, p):
+    p = math.floor(((p or .5) * len(t)) + .5)
+    return t[max(1, min(len(t), p))]
+
+-- Deep copy of a table `t`.
+def copy(t):
+    if type(t) != "table":
+        return t
+    u = {}
+    for k, v in t.items():
+        u[k] = copy(v)
+    return u
+
+-- Return a portion of `t`; go,stop,inc defaults to 1,#t,1.
+-- Negative indexes are supported.
+def slice(t, go, stop, inc):
+    if go and go < 0:
+        go = len(t) + go
+    if stop and stop < 0:
+        stop = len(t) + stop
+    u = {}
+    for j in range((go or 1) // 1, (stop or len(t)) // 1, (inc or 1) // 1):
+        u[1 + len(u)] = t[j]
+    return u
+
+-- ### Strings
+
+-- `fmt` means `string.format`.
+fmt  = string.format
+
+-- print to standard error
+def say(*args):   io.stderr.write(fmt(*args))
+def sayln(*args): io.stderr.write(fmt(*args)+"\n")
+
+-- Print a nested table (sorted by the keys of the table).
+def oo(t): print(o(t)); return t
+def o(t):
+  if type(t)~="table": return str(t)
+  def fun (k,v): return fmt(":%s %s",k,o(v))
+  return "{"+" ".join(map(o,t) if len(t)>0 else sorted(kap(t,fun)))+"}"
+
+
+-- ### Main Control
+
+-- Rune all the functions whose name matches
+-- the command-line flag `-g xx`. Show the help
+-- string if the `-h` flag is set. Return to the operating
+-- system the number of failing `funs`.
+def main(funs,is,help):
+    y,n,saved = 0,0,copy(is)
+    if is.help: os.exit(print(help))
+    for _,pair in pairs(funs):
+        k = pair.key
+        if k:find(".*"..is.go..".*"):
+            for k,v in pairs(saved): is[k]=v
+            Seed = is.seed
+            math.randomseed(Seed)
+            print(fmt("\n▶️  %s %s",k,("-"):rep(60)))
+            ok,val = pcall(pair.fun)
+            if not ok:         n=n+1; sayln("❌ FAIL %s %s",k,val);
+                                        sayln(debug.traceback())
+            elif val==False: n=n+1; sayln("❌ FAIL %s",k)
+            else:               y=y+1; sayln("✅ PASS %s",k)
+    if y+n>0: sayln("🔆 %s",o({pass=y, fail=n, success=100*y/(y+n)//1}))
+    rogues()
+    return fails
+
+-- Return any rogue locals (i.e. all those we did not
+-- trap in the `b4` list at top of file).
+def rogues():
+    for k,v in globals().items():
+        if not k in b4: print("#W ?%s %s" % (k,type(v)))
+
+-- Update `t` using command-line options. For boolean
+-- flags, just flip the default values. For others, read
+-- the new value from the command line.
+def cli(t):
+    for k, v in t.iteritems():
+        v = str(v)
+        for n, x in enumerate(arg):
+            if x == "-" + k[0] or x == "--" + k:
+                v = "false" == v and "true" or "true" == v and "false" or arg[n + 1]
+        t[k] = coerce(v)
+    return t
+
+-- ## <a name=egs>Examples</a>
+
+-- Place to store examples.
+egs = {}
+help = help + "\nACTIONS:\n"
+
+-- Used `go` to define an example
+def go(key,xplain,fun):
+  help =  help +fmt("  -g  %s\t%s\n",key,xplain)
+  egs[1+#egs] = {key:key,fun:fun} end
+
+-- Disable an example by renaming it `no`.
+def no(_,__,___): return true end
+
+go("Is","show options",function() oo(is) end)
+
+go("rand","demo random number generation", function(     t,u)
+  Seed=1; t={}; for i=1,1000 do push(t,rint(100)) end
+  Seed=1; u={}; for i=1,1000 do push(u,rint(100)) end
+  for k,v in pairs(t) do assert(v==u[k]) end end)
+
+go("some","demo of reservoir sampling", function(     num1)
+  is.Max = 32
+  num1 = NUM()
+  for i=1,10000 do add(num1,i) end
+  oo(has(num1)) end)
+
+go("nums","demo of NUM", function(     num1,num2)
+  num1,num2 = NUM(), NUM()
+  for i=1,10000 do add(num1, rand()) end
+  for i=1,10000 do add(num2, rand()^2) end
+  print(1,rnd(mid(num1)), rnd(div(num1)))
+  print(2,rnd(mid(num2)), rnd(div(num2)))
+  return .5 == rnd(mid(num1)) and mid(num1)> mid(num2) end)
+
+go("syms","demo SYMS", function(    sym)
+  sym=adds(SYM(), {"a","a","a","a","b","b","c"})
+  print (mid(sym), rnd(div(sym)))
+  return 1.38 == rnd(div(sym)) end)
+
+go("csv","reading csv files", function(     n)
+  n=0; csv(is.file, function(t) n=n+#t end)
+  return 3192 == n end)
+
+go("data", "showing data sets", function(    data,col)
+  data=DATA(is.file)
+  col=data.cols.x[1]
+  print(col.lo,col.hi, mid(col),div(col))
+  oo(stats(data)) end)
+
+go("clone","replicate structure of a DATA",function(    data1,data2)
+  data1=DATA(is.file)
+  data2=DATA(data1,data1.rows)
+  oo(stats(data1))
+  oo(stats(data2)) end)
+
+go("cliffs","stats tests", function(   t1,t2,t3):
+assert(false == cliffsDelta( {8,7,6,2,5,8,7,3},{8,7,6,2,5,8,7,3}),"1")
+assert(true  == cliffsDelta( {8,7,6,2,5,8,7,3}, {9,9,7,8,10,9,6}),"2")
+t1,t2={},{}
+for i=1,1000 do push(t1,rand()) end --rand()/10) end
+for i=1,1000 do push(t2,rand()^.5) end --rand()*10) end
+assert(false == cliffsDelta(t1,t1),"3")
+assert(true  == cliffsDelta(t1,t2),"4")
+local diff,j=false,1.0
+while not diff  do
+    t3=map(t1,function(x) return x*j end)
+    diff=cliffsDelta(t1,t3)
+    print(">",rnd(j),diff)
+    j=j*1.025 end end)
+
+go("dist","distance test", function(    data,num):
+data = DATA(is.file)
+num  = NUM()
+for _,row in pairs(data.rows) do
+    add(num,dist(data, row, data.rows[1])) end
+oo{lo=num.lo, hi=num.hi, mid=rnd(mid(num)), div=rnd(div(num))} end)
+
+go("half","divide data in half", function(   data,l,r):
+data = DATA(is.file)
+local left,right,A,B,c = half(data)
+print(#left,#right)
+l,r = DATA(data,left), DATA(data,right)
+print("l",o(stats(l)))
+print("r",o(stats(r))) end)
+
+go("tree","make snd show tree of clusters", function(   data,l,r):
+showTree(tree(DATA(is.file))) end)
+
+go("sway","optimizing", function(    data,best,rest):
+data = DATA(is.file)
+best,rest = sway(data)
+print("\nall ", o(stats(data)))
+print("    ",   o(stats(data,div)))
+print("\nbest", o(stats(best)))
+print("    ",   o(stats(best,div)))
+print("\nrest", o(stats(rest)))
+print("    ",   o(stats(rest,div)))
+print("\nall ~= best?", o(diffs(best.cols.y, data.cols.y)))
+print("best ~= rest?", o(diffs(best.cols.y, rest.cols.y))) end)
+
+
+
+
