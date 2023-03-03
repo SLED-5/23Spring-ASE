@@ -12,9 +12,7 @@ def go(key, xplain, fun):
     global eg_help
     global egs
     eg_help += utils.fmt("  -g  {}\t{}\n", key, xplain)
-    # lua code is : egs[1+#egs] = {key=key,fun=fun}
     egs[key] = fun
-    # egs.append({'key': key, 'fun': fun})
 
 
 def no(_, __, ___):
