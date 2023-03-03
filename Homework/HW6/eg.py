@@ -21,12 +21,11 @@ def no(_, __, ___):
     return True
 
 
-def packedOO():
-    return utils.oo(config.the)
+def isEgFunc():
+    return utils.oo(config.Is)
 
 
 def randEgFunc():
-    # the rand's logics is not sure
     t = []
     for i in range(1000):
         utils.Seed = 1
@@ -41,7 +40,7 @@ def randEgFunc():
 
 
 def someEgfunc():
-    config.the["Max"] = 32
+    config.Is["Max"] = 32
     num1 = NUM.NUM(None, None)
     for i in range(1, 10001):
         num1.add(i)
@@ -51,7 +50,6 @@ def someEgfunc():
 def numsEgFunc():
     num1 = NUM.NUM(None, None)
     num2 = NUM.NUM(None, None)
-    # the rand function here needs at one para, but lua code is unclear
     for i in range(1, 10001):
         num1.add(utils.rand())
     for i in range(1, 10001):
@@ -69,19 +67,16 @@ def symsEgFunc():
 
 def csvEgFunc():
     n = 0
-
-    # not sure where's the t come from
     def fun(t):
         nonlocal n
         n += len(t)
 
-    utils.fcsv(config.the["file"], fun)
+    utils.fcsv(config.Is["file"], fun)
     return 3192 == n
 
 
-# under here is all about DATA, needs to double-check after DATA done
 def dataEgFunc():
-    data = DATA.read(DATA(), config.the["file"])
+    data = DATA(config.Is["file"])  # note
     col = data.cols.x[0]
     print(col.lo, col.hi, col.mid(), col.div())
     utils.oo(data.stats())
@@ -89,8 +84,8 @@ def dataEgFunc():
 
 
 def cloneEgFunc():
-    data1 = DATA.read(DATA(), config.the["file"])
-    data2 = DATA.clone(data1, data1.rows)
+    data1 = DATA.DATA(config.Is["file"])
+    data2 = DATA.DATA(data1, data1.rows)
     utils.oo(data1.stats())
     utils.oo(data2.stats())
     return True
@@ -101,7 +96,6 @@ def cliffsEgFunc():
     assert utils.cliffsDelta([8, 7, 6, 2, 5, 8, 7, 3], [9, 9, 7, 8, 10, 9, 6]) is True
     t1, t2 = [], []
     for i in range(1000):
-        # same issue, here the rand should have at least one para
         utils.push(t1, utils.rand())
     for i in range(1000):
         utils.push(t2, utils.rand() ** 0.5)
@@ -122,7 +116,7 @@ def cliffsEgFunc():
 
 
 def distEgFunc():
-    data = DATA.read(DATA(), config.the["file"])
+    data = DATA.DATA(config.Is["file"])
     num = NUM.NUM(None, None)
     for _, row in enumerate(data.rows):
         # attention: here maybe num.add(data.dist(row, data.rows[0]))
@@ -131,25 +125,24 @@ def distEgFunc():
     return True
 
 def halfEgFunc():
-    data = DATA.read(DATA(), config.the["file"])
+    data = DATA.DATA(config.Is["file"])
     left, right, A, B, c = data.half()
     print(len(left), len(right))
-    l, r = DATA.clone(data, left), DATA.clone(data, right)
+    l, r = DATA.DATA(data, left), DATA.DATA(data, right)
     print("l", utils.o(l.stats()))
     print("r", utils.o(r.stats()))
     return True
 
 
 def treeEgFunc():
-    data = DATA.read(DATA(), config.the["file"])
+    data = DATA.DATA(config.Is["file"])
     utils.showTree(data.tree())
     return True
 
 
 def swayEgFunc():
-    data = DATA.read(DATA(), config.the["file"])
+    data = DATA.DATA(config.Is["file"])
     best, rest = data.sway()
-    # here not sure where the div come form
     print("\nall ", utils.o(data.stats()))
     print("    ", utils.o(data.stats(data.div, None)))
     print("\nbest", utils.o(best.stats()))
@@ -167,10 +160,9 @@ def swayEgFunc():
 
 
 def binsEgFunc():
-    data = DATA.read(DATA(), config.the["file"])
+    data = DATA.DATA(config.Is["file"])
     best, rest = data.sway()
     print("all", "", "", "", utils.o({'best': len(best.rows), 'rest': len(rest.rows)}))
-    # here is not sure
     for k, t in enumerate(utils.bins(data.cols.x, ({'best': best.rows, 'rest': rest.rows}))):
         for _, it_range in enumerate(t):
             # if it_range.txt != b4:
@@ -182,8 +174,25 @@ def binsEgFunc():
     return True
 
 
+def xplnEgFun():
+    data = DATA.DATA(config.Is["file"])
+    best, rest, evals = data.sway()
+    rule, most = data.xpln(best, rest)
+    print("\n-----------\nexplain=", utils.o(utils.showRule(rule)))
+
+    data1 = DATA.DATA(data, utils.selects(rule, data.rows))
+    print("all               ", utils.o(data.stats()), utils.o(data.stats(data.div)))
+    print(utils.fmt("sway with %5s evals", evals), utils.o(best.stats()), utils.o(best.stats(best.div)))
+    print(utils.fmt("xpln on   %5s evals", evals), utils.o(data1.stats()), utils.o(data1.stats(data1.div)))
+
+    top, _ = data.betters(len(best.rows))
+    top = DATA.DATA(data, top)
+    print(utils.fmt("sort with %5s evals", len(data.rows)), utils.o(top.stats()), utils.o(top.stats(top.div)))
+    return True
+
+
 def runTest():
-    go('the', "show options", packedOO)
+    go('the', "show options", isEgFunc())
     go('rand', "demo random number generation", randEgFunc)
     go('some', "demo of reservoir sampling", someEgfunc)
     go('nums', "demo of NUM", numsEgFunc)
@@ -197,3 +206,4 @@ def runTest():
     go('tree', "make snd show tree of clusters", treeEgFunc)
     go('sway', "optimizing", swayEgFunc)
     go('bins', "find deltas between best and rest", binsEgFunc)
+    go('xpln', "explore explanation sets", xplnEgFun())
