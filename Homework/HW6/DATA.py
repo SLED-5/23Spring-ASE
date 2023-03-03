@@ -5,9 +5,17 @@ from SYM import SYM
 
 class DATA:
 
-    def __init__(self):
+    def __init__(self, src):
         self.rows, self.cols = [], None
         self.A, self.B, self.left, self.right, self.mid, self.c = None, None, None, None, None, None
+
+        add = lambda t: self.row(t)     #: ?:不确定对不对，因为lua中t凭空来的，感觉是lambda的意思
+        if type(src) == str:
+            utils.fcsv(src, add)
+        else:
+            self.cols = COLS(src.cols.name)
+
+        utils.fMap(self.rows or [], add)
 
     # def add(self, col, x, n):
     #     if x != "?":
@@ -96,8 +104,8 @@ class DATA:
         if cols is None:
             cols = self.cols.x
 
-        d, n = 0, 1 / float("inf")
-        for c in cols:  # not sure it's list or dict, write as a list
+        d, n = 0, 0
+        for c in cols:
             n += 1
             d += dist1(c, t1[c.at], t2[c.at]) ** the["p"]
 
@@ -112,6 +120,14 @@ class DATA:
             s2 -= math.exp(col.w * (y - x) / len(ys))
 
         return s1 / len(ys) < s2 / len(ys)
+
+    def betters(self, n):
+        def fun(r1, r2):
+            return self.better(r1, r2)
+
+        tmp = utils.fSort(self.rows, fun)
+
+        return n and utils.slice(tmp, 1, n), utils.slice(tmp, n+1) or tmp
 
     def half(self, rows=None, cols=None, above=None):
         if rows is None:
@@ -143,7 +159,13 @@ class DATA:
             else:
                 right.append(two["row"])
 
-        return [left, right, A, B, c]
+        # evals = the["Reuse"] and above and 1 or 2
+        if the["Reuse"] and above and 1:
+            evals = 1
+        else:
+            evals = 2
+
+        return [left, right, A, B, c, evals]
 
     def tree(self, cols=None, above=None, rows=None):  # changed the order
         if rows is None:
@@ -158,11 +180,11 @@ class DATA:
         return here
 
     def sway(self):
-        def worker(rows, worse, above=None):
+        def worker(rows, worse, evals0, above=None):
             if len(rows) <= len(self.rows) ** the["min"]:
-                return rows, utils.many(worse, the["rest"] * len(rows))
+                return rows, utils.many(worse, the["rest"] * len(rows)), evals0
             else:
-                l, r, A, B, _ = self.half(rows, None, above)  # ?: cols
+                l, r, A, B, c, evals = self.half(rows, None, above)
                 if self.better(B, A):
                     l, r, A, B = r, l, B, A
 
@@ -170,10 +192,10 @@ class DATA:
                     worse.append(row)
 
                 utils.fMap(r, func)
-            return worker(l, worse, [])
+            return worker(l, worse, evals+evals0, [])   # ?:[]不是A吗
 
-        best, rest = worker(self.rows, [])
-        return self.clone(best), self.clone(rest)
+        best, rest, evals = worker(self.rows, [], 0)
+        return self.clone(best), self.clone(rest), evals
 
     def div(self, col):
         if type(col) == NUM.NUM:

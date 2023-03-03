@@ -252,7 +252,7 @@ function half(data,  rows,cols,above)
   local left,right,far,gap,some,proj,cos,tmp,A,B,c = {},{}
   function gap(r1,r2) return dist(data, r1, r2, cols) end
   function cos(a,b,c) return (a^2 + c^2 - b^2)/(2*c) end
-  function proj(r)    return {row=r, x=cos(gap(r,A), gap(r,B),c)} end
+  function proj(r)  d  return {row=r, x=cos(gap(r,A), gap(r,B),c)} end
   rows = rows or data.rows
   some = many(rows,the.Halves)
   A    = (the.Reuse and above) or any(some)
