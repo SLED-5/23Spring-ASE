@@ -531,3 +531,8 @@ def showTree(tree, lvl = None):
             showTree(tree["left"], lvl + 1)
         if "right" in tree:
             showTree(tree["right"], lvl + 1)
+
+def rogues(b4):
+    for k, v in globals().items():
+        if k not in b4:
+            print(f"#W ?{k} {type(v)}")
