@@ -190,7 +190,7 @@ def xplnEgFun():
 
 
 def runTest():
-    go('the', "show options", isEgFunc())
+    go('is', "show options", isEgFunc())
     go('rand', "demo random number generation", randEgFunc)
     go('some', "demo of reservoir sampling", someEgfunc)
     go('nums', "demo of NUM", numsEgFunc)
