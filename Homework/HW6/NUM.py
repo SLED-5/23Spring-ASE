@@ -1,6 +1,6 @@
 import math
 import utils
-from config import the
+from config import Is
 class NUM:
 
     def __init__(self, at, txt):
@@ -18,7 +18,7 @@ class NUM:
 
             self.lo, self.hi = min(x, self.lo), max(x, self.hi)
             num_all = len(self.has_list)
-            pos = (num_all < the['Max'] and num_all + 1) or (utils.rand() < the['Max'] / self.n and utils.rint(1, num_all))
+            pos = (num_all < Is['Max'] and num_all + 1) or (utils.rand() < Is['Max'] / self.n and utils.rint(1, num_all))
             # print("pos: " + str(pos) + ", x: " + str(x))
             if pos:
                 if pos > num_all:
