@@ -252,6 +252,75 @@ def xpln(data, best, rest, maxSizes, tmp, v, score):
     rule, most = firstN(sorted(tmp, key=lambda k: k["val"], reverse=True), score)
     return rule, most
 
+
+def firstN(sortedRanges, scoreFun, first, useful, most, out):
+    print("")
+    map(lambda r: print(r["range"].txt, r["range"].lo, r["range"].hi, rnd(r["val"]), o(r["range"].y.has)), sortedRanges)
+    first = sortedRanges[0]["val"]
+    
+    def useful(range):
+        if range["val"] > 0.05 and range["val"] > first / 10:
+            return range
+        
+    sortedRanges = list(filter(None, map(useful, sortedRanges))) # reject useless ranges
+    most, out = -1, None
+    
+    for n in range(1, len(sortedRanges) + 1):
+        tmp, rule = scoreFun(list(map(lambda r: r["range"], sortedRanges[:n])))
+        if tmp and tmp > most:
+            out, most = rule, tmp
+            
+    return out, most
+
+def showRule(rule, merges, merge, pretty):
+    def pretty(range):
+        return range["lo"] if range["lo"] == range["hi"] else [range["lo"], range["hi"]]
+    
+    def merges(attr, ranges):
+        return list(map(pretty, merge(sorted(ranges, key=lambda k: k["lo"]))))
+    
+    def merge(t0):
+        t, j = [], 0
+        
+        while j < len(t0):
+            left, right = t0[j], t0[j + 1] if j + 1 < len(t0) else None
+            
+            if right and left["hi"] == right["lo"]:
+                left["hi"] = right["hi"]
+                j += 1
+                
+            t.append({"lo": left["lo"], "hi": left["hi"]})
+            j += 1
+            
+        return t if len(t0) == len(t) else merge(t)
+    
+    return kap(rule, merges)
+
+def selects(rule, rows, disjunction, conjunction):
+    def disjunction(ranges, row):
+        for range in ranges:
+            lo, hi, at = range["lo"], range["hi"], range["at"]
+            x = row[at]
+            
+            if x == "?":
+                return True
+            elif lo == hi == x:
+                return True
+            elif lo <= x < hi:
+                return True
+            
+        return False
+    
+    def conjunction(row):
+        for ranges in rule:
+            if not disjunction(ranges, row):
+                return False
+            
+        return True
+    
+    return list(filter(None, map(lambda r: r if conjunction(r) else None, rows)))
+
+
 def doFile(filename):
     result_str = '{'
     with open(filename, newline='') as csvfile:
