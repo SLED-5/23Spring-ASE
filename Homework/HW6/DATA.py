@@ -1,5 +1,5 @@
 from COLS import *
-from config import the
+from config import Is
 from SYM import SYM
 
 
@@ -107,9 +107,9 @@ class DATA:
         d, n = 0, 0
         for c in cols:
             n += 1
-            d += dist1(c, t1[c.at], t2[c.at]) ** the["p"]
+            d += dist1(c, t1[c.at], t2[c.at]) ** Is["p"]
 
-        return (d / n) ** (1 / the["p"])
+        return (d / n) ** (1 / Is["p"])
 
     def better(self, row1, row2):
         s1, s2, ys = 0, 0, self.cols.y
@@ -132,8 +132,8 @@ class DATA:
     def half(self, rows=None, cols=None, above=None):
         if rows is None:
             rows = self.rows
-        some = utils.many(rows, the["Halves"])
-        A = (the["Reuse"] and above) or utils.any(some)
+        some = utils.many(rows, Is["Halves"])
+        A = (Is["Reuse"] and above) or utils.any(some)
 
         def gap(r1, r2):
             return self.dist(r1, r2, cols)
@@ -148,7 +148,7 @@ class DATA:
             return {'row': r, 'd': gap(r, A)}
 
         tmp = utils.fSort(utils.fMap(some, func), utils.lt("d"))
-        far = tmp[int((len(tmp) * the["Far"]) // 1) - 1]
+        far = tmp[int((len(tmp) * Is["Far"]) // 1) - 1]
         B, c = far["row"], far["d"]
 
         left, right = [], []
@@ -159,8 +159,8 @@ class DATA:
             else:
                 right.append(two["row"])
 
-        # evals = the["Reuse"] and above and 1 or 2
-        if the["Reuse"] and above and 1:
+        # evals = Is["Reuse"] and above and 1 or 2
+        if Is["Reuse"] and above and 1:
             evals = 1
         else:
             evals = 2
@@ -172,7 +172,7 @@ class DATA:
             rows = self.rows
 
         here = {'data': self.clone(rows)}
-        if len(rows) >= 2 * (len(self.rows)) ** the["min"]:
+        if len(rows) >= 2 * (len(self.rows)) ** Is["min"]:
             left, right, A, B, _ = self.half(rows, cols, above)
             here["left"] = self.tree(cols, A, left)
             here["right"] = self.tree(cols, B, right)
@@ -181,8 +181,8 @@ class DATA:
 
     def sway(self):
         def worker(rows, worse, evals0, above=None):
-            if len(rows) <= len(self.rows) ** the["min"]:
-                return rows, utils.many(worse, the["rest"] * len(rows)), evals0
+            if len(rows) <= len(self.rows) ** Is["min"]:
+                return rows, utils.many(worse, Is["rest"] * len(rows)), evals0
             else:
                 l, r, A, B, c, evals = self.half(rows, None, above)
                 if self.better(B, A):

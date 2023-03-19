@@ -40,4 +40,4 @@ def main(options, main_help):
                     print("✅ pass:" + what[0])
 
 
-main(config.the, config.help)
+main(config.Is, config.help)

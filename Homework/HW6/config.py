@@ -16,7 +16,7 @@ OPTIONS:
   -d  --d       different is over sd*d       = .35
   -f  --file    data file                    = ../etc/data/auto93.csv
   -F  --Far     distance to distant          = .95
-  -g  --go      start-up action              = nothing
+  -g  --go      start-up action              = all
   -h  --help    show help                    = false
   -H  --Halves  search space for clustering  = 512
   -m  --min     size of smallest cluster     = .5

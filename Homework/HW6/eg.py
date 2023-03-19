@@ -82,8 +82,8 @@ def dataEgFunc():
 
 
 def cloneEgFunc():
-    data1 = DATA.DATA(config.Is["file"])
-    data2 = DATA.DATA(data1, data1.rows)
+    data1 = DATA(config.Is["file"])
+    data2 = DATA(data1, data1.rows)
     utils.oo(data1.stats())
     utils.oo(data2.stats())
     return True
@@ -114,7 +114,7 @@ def cliffsEgFunc():
 
 
 def distEgFunc():
-    data = DATA.DATA(config.Is["file"])
+    data = DATA(config.Is["file"])
     num = NUM.NUM(None, None)
     for _, row in enumerate(data.rows):
         # attention: here maybe num.add(data.dist(row, data.rows[0]))
@@ -123,23 +123,23 @@ def distEgFunc():
     return True
 
 def halfEgFunc():
-    data = DATA.DATA(config.Is["file"])
+    data = DATA(config.Is["file"])
     left, right, A, B, c = data.half()
     print(len(left), len(right))
-    l, r = DATA.DATA(data, left), DATA.DATA(data, right)
+    l, r = DATA(data, left), DATA(data, right)
     print("l", utils.o(l.stats()))
     print("r", utils.o(r.stats()))
     return True
 
 
 def treeEgFunc():
-    data = DATA.DATA(config.Is["file"])
+    data = DATA(config.Is["file"])
     utils.showTree(data.tree())
     return True
 
 
 def swayEgFunc():
-    data = DATA.DATA(config.Is["file"])
+    data = DATA(config.Is["file"])
     best, rest = data.sway()
     print("\nall ", utils.o(data.stats()))
     print("    ", utils.o(data.stats(data.div, None)))
@@ -158,7 +158,7 @@ def swayEgFunc():
 
 
 def binsEgFunc():
-    data = DATA.DATA(config.Is["file"])
+    data = DATA(config.Is["file"])
     best, rest = data.sway()
     print("all", "", "", "", utils.o({'best': len(best.rows), 'rest': len(rest.rows)}))
     for k, t in enumerate(utils.bins(data.cols.x, ({'best': best.rows, 'rest': rest.rows}))):
@@ -173,24 +173,24 @@ def binsEgFunc():
 
 
 def xplnEgFun():
-    data = DATA.DATA(config.Is["file"])
+    data = DATA(config.Is["file"])
     best, rest, evals = data.sway()
     rule, most = data.xpln(best, rest)
     print("\n-----------\nexplain=", utils.o(utils.showRule(rule)))
 
-    data1 = DATA.DATA(data, utils.selects(rule, data.rows))
+    data1 = DATA(data, utils.selects(rule, data.rows))
     print("all               ", utils.o(data.stats()), utils.o(data.stats(data.div)))
     print(utils.fmt("sway with %5s evals", evals), utils.o(best.stats()), utils.o(best.stats(best.div)))
     print(utils.fmt("xpln on   %5s evals", evals), utils.o(data1.stats()), utils.o(data1.stats(data1.div)))
 
     top, _ = data.betters(len(best.rows))
-    top = DATA.DATA(data, top)
+    top = DATA(data, top)
     print(utils.fmt("sort with %5s evals", len(data.rows)), utils.o(top.stats()), utils.o(top.stats(top.div)))
     return True
 
 
 def runTest():
-    go('is', "show options", isEgFunc())
+    go('is', "show options", isEgFunc)
     go('rand', "demo random number generation", randEgFunc)
     go('some', "demo of reservoir sampling", someEgfunc)
     go('nums', "demo of NUM", numsEgFunc)
@@ -204,4 +204,4 @@ def runTest():
     go('tree', "make snd show tree of clusters", treeEgFunc)
     go('sway', "optimizing", swayEgFunc)
     go('bins', "find deltas between best and rest", binsEgFunc)
-    go('xpln', "explore explanation sets", xplnEgFun())
+    go('xpln', "explore explanation sets", xplnEgFun)
