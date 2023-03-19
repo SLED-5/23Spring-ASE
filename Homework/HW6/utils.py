@@ -228,6 +228,29 @@ def convert_to_json_key(match_obj):
         result_key = "\"" + result_key + "\":"
     return result_key
 
+def xpln(data, best, rest, maxSizes, tmp, v, score):
+    def v(has):
+        return value(has, len(best.rows), len(rest.rows), "best")
+    
+    def score(ranges, rule, bestr, restr):
+        rule = RULE(ranges, maxSizes)
+        if rule:
+            oo(showRule(rule))
+            bestr = selects(rule, best.rows)
+            restr = selects(rule, rest.rows)
+            if len(bestr) + len(restr) > 0:
+                return v({"best": len(bestr), "rest": len(restr)}), rule
+            
+    tmp, maxSizes = [], {}
+    for _, ranges in bins(data.cols.x, {"best": best.rows, "rest": rest.rows}).items():
+        maxSizes[ranges[0].txt] = len(ranges)
+        print("")
+        for _, range in enumerate(ranges):
+            print(range.txt, range.lo, range.hi)
+            tmp.append({"range": range, "max": len(ranges), "val": v(range.y.has)})
+            
+    rule, most = firstN(sorted(tmp, key=lambda k: k["val"], reverse=True), score)
+    return rule, most
 
 def doFile(filename):
     result_str = '{'
