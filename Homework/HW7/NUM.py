@@ -2,6 +2,7 @@ class NUM:
     def __init__(self):
         self.n, self.mu, self.m2, self.sd = None, None, None, None
 
+    # This part not sure
     def NUM(self, t):
         self.n, self.mu, self.m2, self.sd = 0, 0, 0, 0
         if t is not None:

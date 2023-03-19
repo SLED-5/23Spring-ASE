@@ -68,6 +68,7 @@ def bootstrap(y0, z0):
         zhat.append(z1 - zmu + xmu)
     tobs = y.delta(z)
     for _ in range(the['bootstrap']):
+        # Note here
         if NUM.NUM(samples(yhat)).delta(NUM.NUM(samples(zhat))) > tobs:
             n += 1
     return n / the['bootstrap'] >= the['conf']
