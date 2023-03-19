@@ -464,7 +464,7 @@ def bins(cols, rowss):
 def bin(col, x):
     if x == "?" or type(col) == SYM:
         return x
-    tmp = (col.hi - col.lo)/(the["bins"] - 1)
+    tmp = (col.hi - col.lo)/(Is["bins"] - 1)
     if col.hi == col.lo:
         return 1
     else:
@@ -530,7 +530,7 @@ def cliffsDelta(ns1, ns2):
                 gt = gt + 1
             if x < y:
                 lt = lt + 1
-    return abs(lt - gt)/n > the["cliffs"]
+    return abs(lt - gt)/n > Is["cliffs"]
 
 def diffs(nums1, nums2):
     def fun(k, nums):

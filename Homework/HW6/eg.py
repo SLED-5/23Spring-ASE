@@ -124,7 +124,7 @@ def distEgFunc():
 
 def halfEgFunc():
     data = DATA(config.Is["file"])
-    left, right, A, B, c = data.half()
+    left, right, A, B, c, other = data.half()
     print(len(left), len(right))
     l, r = DATA(data, left), DATA(data, right)
     print("l", utils.o(l.stats()))
@@ -140,7 +140,7 @@ def treeEgFunc():
 
 def swayEgFunc():
     data = DATA(config.Is["file"])
-    best, rest = data.sway()
+    best, rest, _ = data.sway()
     print("\nall ", utils.o(data.stats()))
     print("    ", utils.o(data.stats(data.div, None)))
     print("\nbest", utils.o(best.stats()))
@@ -159,7 +159,7 @@ def swayEgFunc():
 
 def binsEgFunc():
     data = DATA(config.Is["file"])
-    best, rest = data.sway()
+    best, rest, other = data.sway()
     print("all", "", "", "", utils.o({'best': len(best.rows), 'rest': len(rest.rows)}))
     for k, t in enumerate(utils.bins(data.cols.x, ({'best': best.rows, 'rest': rest.rows}))):
         for _, it_range in enumerate(t):

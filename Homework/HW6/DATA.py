@@ -5,17 +5,22 @@ from SYM import SYM
 
 class DATA:
 
-    def __init__(self, src):
+    def __init__(self, src=None, rows=None):
+        if rows is None:
+            rows = []
         self.rows, self.cols = [], None
         self.A, self.B, self.left, self.right, self.mid, self.c = None, None, None, None, None, None
 
-        add = lambda t: self.row(t)     #: ?:不确定对不对，因为lua中t凭空来的，感觉是lambda的意思
+        def add(t):
+            self.row(t)     #: ?:不确定对不对，因为lua中t凭空来的，感觉是lambda的意思
+        if src is None:
+            return
         if type(src) == str:
             utils.fcsv(src, add)
         else:
             self.cols = COLS(src.cols.name)
 
-        utils.fMap(self.rows or [], add)
+        utils.fMap(rows or [], add)
 
     # def add(self, col, x, n):
     #     if x != "?":
@@ -173,7 +178,7 @@ class DATA:
 
         here = {'data': self.clone(rows)}
         if len(rows) >= 2 * (len(self.rows)) ** Is["min"]:
-            left, right, A, B, _ = self.half(rows, cols, above)
+            left, right, A, B, other1, other2 = self.half(rows, cols, above)
             here["left"] = self.tree(cols, A, left)
             here["right"] = self.tree(cols, B, right)
 

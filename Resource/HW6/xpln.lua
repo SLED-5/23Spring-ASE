@@ -34,9 +34,9 @@ OPTIONS:
   -b  --bins    initial number of bins       = 16
   -c  --cliffs  cliff's delta threshold      = .147
   -d  --d       different is over sd*d       = .35
-  -f  --file    data file                    = ../etc/data/auto93.csv
+  -f  --file    data file                    = C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\auto93.csv
   -F  --Far     distance to distant          = .95
-  -g  --go      start-up action              = nothing
+  -g  --go      start-up action              = all
   -h  --help    show help                    = false
   -H  --Halves  search space for clustering  = 512
   -m  --min     size of smallest cluster     = .5
@@ -625,7 +625,7 @@ function main(funs,is,help,    y,n,saved,k,val,ok)
   then os.exit(print(help)) end
   for _,pair in pairs(funs) do
     k = pair.key
-    if k:find(".*"..is.go..".*") then
+    if is.go == 'all' or k:find(".*"..is.go..".*") then
       for k,v in pairs(saved) do is[k]=v end
       Seed = is.seed
       math.randomseed(Seed)
