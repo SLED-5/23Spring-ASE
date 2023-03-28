@@ -8,7 +8,8 @@ import json
 import sys
 
 from DATA import *
-
+from RULE import *
+from RANGE import *
 cnt = 0
 # Numerics
 Seed = 937162211
@@ -228,58 +229,86 @@ def convert_to_json_key(match_obj):
         result_key = "\"" + result_key + "\":"
     return result_key
 
-def xpln(data, best, rest, maxSizes, tmp, v, score):
+def RULE(ranges, maxSize):
+    t = {}
+    for range_inner in ranges:
+        txt = range_inner.txt
+        t[txt] = t.get(txt, [])
+        t[txt].append({'lo': range_inner.lo, 'hi': range_inner.hi, 'at': range_inner.at})
+    return prune(t, maxSize)
+
+def prune(rule, maxSize):
+    n = 0
+    new_rule = {}
+    for txt, ranges in rule.items():
+        n += 1
+        if len(ranges) == maxSize[txt]:
+            n += 1
+            # del rule[txt]
+        else:
+            new_rule[txt] = ranges
+    if n > 0:
+        return new_rule
+
+
+def xpln(data, best, rest):
     def v(has):
         return value(has, len(best.rows), len(rest.rows), "best")
     
-    def score(ranges, rule, bestr, restr):
-        rule = RULE(ranges, maxSizes)
-        if rule:
-            oo(showRule(rule))
-            bestr = selects(rule, best.rows)
-            restr = selects(rule, rest.rows)
+    def score(ranges):
+        rule_inner = RULE(ranges, maxSizes)
+        if rule_inner:
+            oo(showRule(rule_inner))
+            bestr = selects(rule_inner, best.rows)
+            restr = selects(rule_inner, rest.rows)
             if len(bestr) + len(restr) > 0:
-                return v({"best": len(bestr), "rest": len(restr)}), rule
+                return v({"best": len(bestr), "rest": len(restr)}), rule_inner
             
     tmp, maxSizes = [], {}
-    for _, ranges in bins(data.cols.x, {"best": best.rows, "rest": rest.rows}).items():
+    range_result = bins(data.cols.x, {"best": best.rows, "rest": rest.rows})
+    for ranges in range_result:
         maxSizes[ranges[0].txt] = len(ranges)
         print("")
         for _, range in enumerate(ranges):
             print(range.txt, range.lo, range.hi)
-            tmp.append({"range": range, "max": len(ranges), "val": v(range.y.has)})
+            tmp.append({"range": range, "max": len(ranges), "val": v(range.y.has_list)})
             
     rule, most = firstN(sorted(tmp, key=lambda k: k["val"], reverse=True), score)
     return rule, most
 
 
-def firstN(sortedRanges, scoreFun, first, useful, most, out):
+def firstN(sortedRanges, scoreFun):
     print("")
-    map(lambda r: print(r["range"].txt, r["range"].lo, r["range"].hi, rnd(r["val"]), o(r["range"].y.has)), sortedRanges)
+    # map(lambda r: print(r["range"].txt, r["range"].lo, r["range"].hi, rnd(r["val"]), o(r["range"].y.has)), sortedRanges)
+    fMap(sortedRanges, lambda r: print(r["range"].txt, r["range"].lo, r["range"].hi, rnd(r["val"]), o(r["range"].y.has_list)))
+
     first = sortedRanges[0]["val"]
     
-    def useful(range):
-        if range["val"] > 0.05 and range["val"] > first / 10:
-            return range
+    def useful(range_inner):
+        if range_inner["val"] > 0.05 and range_inner["val"] > first / 10:
+            return range_inner
         
-    sortedRanges = list(filter(None, map(useful, sortedRanges))) # reject useless ranges
+    # sortedRanges = list(filter(None, map(useful, sortedRanges))) # reject useless ranges
+    sortedRanges = list(filter(None, fMap(sortedRanges, useful))) # reject useless ranges
     most, out = -1, None
     
     for n in range(1, len(sortedRanges) + 1):
-        tmp, rule = scoreFun(list(map(lambda r: r["range"], sortedRanges[:n])))
+        # tmp, rule = scoreFun(list(map(lambda r: r["range"], sortedRanges[:n])))
+        tmp, rule = scoreFun(list(fMap(sortedRanges[:n], lambda r: r["range"])))
         if tmp and tmp > most:
             out, most = rule, tmp
             
     return out, most
 
-def showRule(rule, merges, merge, pretty):
+def showRule(rule):
     def pretty(range):
         return range["lo"] if range["lo"] == range["hi"] else [range["lo"], range["hi"]]
     
     def merges(attr, ranges):
-        return list(map(pretty, merge(sorted(ranges, key=lambda k: k["lo"]))))
-    
-    def merge(t0):
+        # return list(map(pretty, mergeInner(sorted(ranges, key=lambda k: k["lo"])))), attr
+        return list(fMap(mergeInner(sorted(ranges, key=lambda k: k["lo"])), pretty)), attr
+
+    def mergeInner(t0):
         t, j = [], 0
         
         while j < len(t0):
@@ -294,9 +323,9 @@ def showRule(rule, merges, merge, pretty):
             
         return t if len(t0) == len(t) else merge(t)
     
-    return kap(rule, merges)
+    return fKap(rule, merges)
 
-def selects(rule, rows, disjunction, conjunction):
+def selects(rule, rows):
     def disjunction(ranges, row):
         for range in ranges:
             lo, hi, at = range["lo"], range["hi"], range["at"]
@@ -312,13 +341,13 @@ def selects(rule, rows, disjunction, conjunction):
         return False
     
     def conjunction(row):
-        for ranges in rule:
+        for _, ranges in rule.items():
             if not disjunction(ranges, row):
                 return False
             
         return True
     
-    return list(filter(None, map(lambda r: r if conjunction(r) else None, rows)))
+    return list(filter(None, fMap(rows, lambda r: r if conjunction(r) else None)))
 
 
 def doFile(filename):
@@ -448,7 +477,7 @@ def bins(cols, rowss):
                 if x != "?":
                     k = bin(col, x)
                     if k not in ranges:
-                        ranges[k] = RANGE.RANGE(col.at, col.txt, x, None)
+                        ranges[k] = RANGE(col.at, col.txt, x, None)
                     ranges[k].extend(x, y)
         ranges_list = []
         for k, v in ranges.items():

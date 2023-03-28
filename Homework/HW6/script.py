@@ -15,6 +15,7 @@ import copy
 
 def main(options, main_help):
     # y, n, saved = 0, 0, copy.deepcopy(the)
+    pass_cases = 0
     eg.runTest()
     egs = eg.egs
 
@@ -37,7 +38,9 @@ def main(options, main_help):
                     fails = fails + 1
                     print("❌ fail:" + what[0])
                 else:
+                    pass_cases += 1
                     print("✅ pass:" + what[0])
-
+    if pass_cases + fails > 0:
+        print("🔆 %s", utils.o({"pass": pass_cases, "fail": fails, "success": 100*pass_cases/(pass_cases+fails)//1}))
 
 main(config.Is, config.help)

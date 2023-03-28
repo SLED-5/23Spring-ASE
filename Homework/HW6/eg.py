@@ -175,7 +175,7 @@ def binsEgFunc():
 def xplnEgFun():
     data = DATA(config.Is["file"])
     best, rest, evals = data.sway()
-    rule, most = data.xpln(best, rest)
+    rule, most = utils.xpln(data, best, rest)
     print("\n-----------\nexplain=", utils.o(utils.showRule(rule)))
 
     data1 = DATA(data, utils.selects(rule, data.rows))

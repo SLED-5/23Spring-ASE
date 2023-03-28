@@ -432,7 +432,8 @@ function xpln(data,best,rest,      maxSizes,tmp,v,score)
         return v({best= #bestr, rest=#restr}),rule end end
   end ---------------------------------------------------
   tmp,maxSizes = {},{}
-  for _,ranges in pairs(bins(data.cols.x,{best=best.rows, rest=rest.rows})) do
+  range_result = bins(data.cols.x,{best=best.rows, rest=rest.rows})
+  for _,ranges in pairs(range_result) do
     maxSizes[ranges[1].txt] = #ranges
     print""
     for _,range in pairs(ranges) do
