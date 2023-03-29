@@ -32,6 +32,8 @@ jobs:
           python ./Homework/HW3/script.py -g all
           python ./Homework/HW4/script.py -g all
           python ./Homework/HW5/script.py -g all
+          python ./Homework/HW6/script.py -g all
+          python ./Homework/HW7/stats.py -g all
 
 
       - name: Report
