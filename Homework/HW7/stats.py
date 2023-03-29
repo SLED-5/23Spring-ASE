@@ -1,7 +1,6 @@
 import functools
 import math
 import random
-from NUM import *
 
 the = {'bootstrap': 512, 'conf': 0.05, 'cliff': 0.4, 'cohen': 0.35,
        'Fmt': '{:6.2f}', 'width': 40}
