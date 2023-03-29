@@ -268,4 +268,8 @@ eg.sk =function(        rxs,a,b,c,d,e,f,g,h,j,k)
     print("",rx.rank,rx.name,rx.show) end end
 
 
-for k,fun in pairs(eg) do eg.ok(); print("\n"..k);fun() end
+for k,fun in pairs(eg) 
+  do eg.ok(); 
+    print("\n"..k);
+    fun();
+end

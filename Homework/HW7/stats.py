@@ -1,9 +1,10 @@
+import functools
 import math
 import random
 from NUM import *
 
 the = {'bootstrap': 512, 'conf': 0.05, 'cliff': 0.4, 'cohen': 0.35,
-       'Fmt': '%6.2f', 'width': 40}
+       'Fmt': '{:6.2f}', 'width': 40}
 
 
 def erf(x):
@@ -79,9 +80,9 @@ def RX(t, s=None):
 
 def mid(t, n=None):
     t = t.get('has', t)
-    print(t)
+    # print(t)
     n = len(t) // 2
-    print("len" + str(len(t)))
+    # print("len" + str(len(t)))
     if len(t) > 0:
         return (t[n - 1] + t[n]) / 2 if len(t) % 2 == 0 else t[n]
 
@@ -102,8 +103,8 @@ def scottKnot(rxs):
     def merges(i, j):
         out = RX({}, rxs[i]['name'])
         for k in range(i, j+1):
-            print("rxs" + str(len(rxs)))
-            print(j)
+            # print("rxs" + str(len(rxs)))
+            # print(j)
             out = merge(out, rxs[j - 1])
         return out
 
@@ -152,9 +153,9 @@ def tiles(rxs):
         u[D:E+1] = ["-"]*(E-D+1)
         u[the['width']//2] = "|"
         u[C] = "*"
-        rx['show'] = ''.join(u) + str(the["Fmt"]).format(str(a))
+        rx['show'] = ''.join(u) + the["Fmt"].format(a)
         for x in [b, c, d, e]:
-            rx['show'] += ", " + str(the["Fmt"]).format(str(x))
+            rx['show'] += ", " + the["Fmt"].format(x)
         rx['show'] += "}"
     return rxs
 
@@ -171,7 +172,7 @@ eg["sample"] = sample
 
 def num():
     n = NUM([1,2,3,4,5,6,7,8,9,10])
-    print("", n.n, n.mu, n.sd)
+    # print("", n.n, n.mu, n.sd)
 eg["num"] = num
 
 def gauss():
@@ -188,7 +189,7 @@ def bootmu():
         a.append(gaussian(10, 1))
     print("","mu","sd","cliffs","boot","both")
     print("","--","--","------","----","----")
-    for mu in range(100, 110, 1):
+    for mu in range(100, 111, 1):
         mu /= 10
         for i in range(100):
             b.append(gaussian(mu, 1))
@@ -260,10 +261,19 @@ def eg_tiles():
         k.append(gaussian(10,1))
 
     for k, v in enumerate([a, b, c, d, e, f, g, h, j, k]):
-        rxs.append(RX(v, "rx{}".join(str(k))))
+        rxs.append(RX(v, "rx" + str(k)))
+
     def func(a, b):
-        return mid(a) < mid(b)
-    rxs_sorted = sorted(rxs, key=func)
+        mid_a = mid(a)
+        mid_b = mid(b)
+        if mid_a < mid_b:
+            return -1
+        elif mid_a > mid_b:
+            return 1
+        else:
+            return 0
+
+    rxs_sorted = sorted(rxs, key=functools.cmp_to_key(func))
     for rx in tiles(rxs_sorted):
         print("", rx["name"], rx["show"])
 eg['tiles'] = eg_tiles
