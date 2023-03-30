@@ -172,7 +172,7 @@ eg["sample"] = sample
 
 def num():
     n = NUM([1,2,3,4,5,6,7,8,9,10])
-    # print("", n.n, n.mu, n.sd)
+    print("", n.n, n.mu, n.sd)
 eg["num"] = num
 
 def gauss():
@@ -277,6 +277,34 @@ def eg_tiles():
     for rx in tiles(rxs_sorted):
         print("", rx["name"], rx["show"])
 eg['tiles'] = eg_tiles
+
+def eg_sk():
+    rxs, a, b, c, d, e, f, g, h, j, k = [], [], [], [], [], [], [], [], [], [], []
+    for i in range(1000):
+        a.append(gaussian(10, 1))
+    for i in range(1000):
+        b.append(gaussian(10.1, 1))
+    for i in range(1000):
+        c.append(gaussian(20, 1))
+    for i in range(1000):
+        d.append(gaussian(30, 1))
+    for i in range(1000):
+        e.append(gaussian(30.1, 1))
+    for i in range(1000):
+        f.append(gaussian(10, 1))
+    for i in range(1000):
+        g.append(gaussian(10, 1))
+    for i in range(1000):
+        h.append(gaussian(40, 1))
+    for i in range(1000):
+        j.append(gaussian(40, 3))
+    for i in range(1000):
+        k.append(gaussian(10, 1))
+    for k, v in enumerate([a, b, c, d, e, f, g, h, j, k]):
+        rxs.append(RX(v, "rx" + str(k)))
+    for rx in tiles(scottKnot(rxs)):
+        print("", rx['rank'], rx['name'], rx['show'])
+eg['sk'] = eg_sk
 
 for k, fun in eg.items():
     eg["ok"]()
