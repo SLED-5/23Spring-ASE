@@ -75,8 +75,7 @@ def bootstrap(y0, z0):
     return n / the['bootstrap'] >= the['conf']
 
 def RX(t, s=None):
-    # t = sorted(t)
-    t.sort()
+    t = sorted(t)
     return {"name": s or "", "rank": 0, "n": len(t), "show": "", "has": t}
 
 def mid(t, n=None):
@@ -102,7 +101,7 @@ def merge(rx1, rx2):
 
 def scottKnot(rxs):
     def merges(i, j):
-        out = RX([], rxs[i]['name'])
+        out = RX({}, rxs[i]['name'])
         for k in range(i, j+1):
             # print("rxs" + str(len(rxs)))
             # print(j)
@@ -273,7 +272,6 @@ def eg_tiles():
             return 1
         else:
             return 0
-        # return mid(a) < mid(b)
 
     rxs_sorted = sorted(rxs, key=functools.cmp_to_key(func))
     for rx in tiles(rxs_sorted):
