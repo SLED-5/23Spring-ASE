@@ -34,9 +34,9 @@ OPTIONS:
   -b  --bins    initial number of bins       = 16
   -c  --cliffs  cliff's delta threshold      = .147
   -d  --d       different is over sd*d       = .35
-  -f  --file    data file                    = C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\auto93.csv
+  -f  --file    data file                    = C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\project_data\\pom.csv
   -F  --Far     distance to distant          = .95
-  -g  --go      start-up action              = all
+  -g  --go      start-up action              = xpln
   -h  --help    show help                    = false
   -H  --Halves  search space for clustering  = 512
   -m  --min     size of smallest cluster     = .5
@@ -335,6 +335,19 @@ function sway(data,     worker,best,rest,c,evals)
   best,rest,evals = worker(data.rows,{},0)
   return DATA(data,best), DATA(data,rest),evals end
 
+function sway2(data,     worker,best,rest,c,evals)
+  function worker(rows,worse,  evals0,above)
+    if   #rows <= (#data.rows)^is.min
+    then return rows, many(worse, is.rest*#rows),evals0
+    else local l,r,A,B,c,evals = half(data, rows, cols, above)
+          if better(data,B,A) then l,r,A,B = r,l,B,A end
+          map(r, function(row) push(worse,row) end)
+          return worker(l,worse,evals+evals0,A) end
+  end ----------------------------------
+  best,rest,evals = worker(data.rows,{},0)
+  return DATA(data,best), DATA(data,rest),evals end
+
+
 -- ## Discretization
 
 -- Return RANGEs that distinguish sets of rows (stored in `rowss`).
@@ -425,7 +438,7 @@ function xpln(data,best,rest,      maxSizes,tmp,v,score)
   function score(ranges,       rule,bestr,restr)
     rule = RULE(ranges,maxSizes)
     if rule then
-      oo(showRule(rule))
+      -- oo(showRule(rule))
       bestr= selects(rule, best.rows)
       restr= selects(rule, rest.rows)
       if #bestr + #restr > 0 then
@@ -435,21 +448,22 @@ function xpln(data,best,rest,      maxSizes,tmp,v,score)
   range_result = bins(data.cols.x,{best=best.rows, rest=rest.rows})
   for _,ranges in pairs(range_result) do
     maxSizes[ranges[1].txt] = #ranges
-    print""
+    -- print""
     for _,range in pairs(ranges) do
-      print(range.txt, range.lo, range.hi)
+      -- print(range.txt, range.lo, range.hi)
       push(tmp, {range=range, max=#ranges,val= v(range.y.has)})  end end
   local rule,most=firstN(sort(tmp,gt"val"),score)
   return rule,most end
 
 function firstN(sortedRanges,scoreFun,           first,useful,most,out)
   print""
-  map(sortedRanges,function(r) print(r.range.txt,r.range.lo,r.range.hi,rnd(r.val),o(r.range.y.has)) end)
+  -- map(sortedRanges,function(r) print(r.range.txt,r.range.lo,r.range.hi,rnd(r.val),o(r.range.y.has)) end)
   first = sortedRanges[1].val
   function useful(range)
-    if range.val>.05 and range.val> first/10 then return range end
+    -- I changed the threshold value for useless range, reduced from 0.05 to 0.005 
+    if range.val>.005 and range.val> first/10 then return range end
   end -------------------------------
-  sortedRanges = map(sortedRanges,useful) -- reject  useless ranges
+  -- sortedRanges = map(sortedRanges,useful) -- reject  useless ranges
   most,out = -1
   for n=1,#sortedRanges do
     local tmp,rule = scoreFun(map(slice(sortedRanges,1,n),on"range"))
@@ -672,6 +686,18 @@ function go(key,xplain,fun)
 -- Disable an example by renaming it `no`.
 function no(_,__,___) return true end
 
+function scandir(directory)
+  local i, t, popen = 0, {}, io.popen
+  local pfile = popen('dir /b "'..directory..'"')
+  for filename in pfile:lines() do
+      i = i + 1
+      t[i] = filename
+      print(filename)
+  end
+  pfile:close()
+  return t
+end
+
 go("Is","show options",function() oo(is) end)
 
 go("rand","demo random number generation", function(     t,u)
@@ -772,17 +798,41 @@ go("bins", "find deltas between best and rest", function(    data,best,rest, b4)
            o(range.y.has)) end end end)
 
 go("xpln","explore explanation sets", function(     data,data1,rule,most,_,best,rest,top,evals)
-  data=DATA(is.file)
-  best,rest,evals = sway(data)
-  rule,most= xpln(data,best,rest)
-  print("\n-----------\nexplain=", o(showRule(rule)))
-  data1= DATA(data,selects(rule,data.rows))
-  print("all               ",o(stats(data)),o(stats(data,div)))
-  print(fmt("sway with %5s evals",evals),o(stats(best)),o(stats(best,div)))
-  print(fmt("xpln on   %5s evals",evals),o(stats(data1)),o(stats(data1,div)))
-  top,_ = betters(data, #best.rows)
-  top = DATA(data,top)
-  print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)), o(stats(top,div)))
+  local file_dir = "C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\project_data\\"
+  local i, t, popen = 0, {}, io.popen
+  local pfile = popen('dir /b "'..file_dir..'"')
+  for filename in pfile:lines() do
+      i = i + 1
+      t[i] = filename
+      print(filename)
+      data=DATA(file_dir..filename)
+      best,rest,evals = sway(data)
+      rule,most= xpln(data,best,rest)
+      print("\n-----------\nexplain=", o(showRule(rule)))
+      data1= DATA(data,selects(rule,data.rows))
+      print("all               ",o(stats(data)),o(stats(data,div)))
+      print(fmt("sway with %5s evals",evals),o(stats(best)),o(stats(best,div)))
+      print(fmt("xpln on   %5s evals",evals),o(stats(data1)),o(stats(data1,div)))
+      top,_ = betters(data, #best.rows)
+      top = DATA(data,top)
+      print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)), o(stats(top,div)))
+      print("-----------------------------")
+      print("")
+  end
+  pfile:close()
+  -- data=DATA(is.file)
+  -- best,rest,evals = sway(data)
+  -- rule,most= xpln(data,best,rest)
+  -- print("\n-----------\nexplain=", o(showRule(rule)))
+  -- data1= DATA(data,selects(rule,data.rows))
+  -- print("all               ",o(stats(data)),o(stats(data,div)))
+  -- print(fmt("sway with %5s evals",evals),o(stats(best)),o(stats(best,div)))
+  -- print(fmt("xpln on   %5s evals",evals),o(stats(data1)),o(stats(data1,div)))
+  -- top,_ = betters(data, #best.rows)
+  -- top = DATA(data,top)
+  -- print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)), o(stats(top,div)))
+  -- print("-----------------------------")
+  -- print("")
 end)
 
 -- ## Start-up
