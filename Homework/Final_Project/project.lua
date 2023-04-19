@@ -34,7 +34,7 @@ OPTIONS:
   -b  --bins    initial number of bins       = 16
   -c  --cliffs  cliff's delta threshold      = .147
   -d  --d       different is over sd*d       = .35
-  -f  --file    data file                    = C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\project_data\\pom.csv
+  -f  --file    data file                    = C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\project_data\\nasa93dem.csv
   -F  --Far     distance to distant          = .95
   -g  --go      start-up action              = xpln
   -h  --help    show help                    = false
@@ -46,6 +46,8 @@ OPTIONS:
   -R  --Reuse   child splits reuse a parent pole = true
   -s  --seed    random number seed           = 937162211
 ]]
+
+local originIs = {};
 -- ## Tricks
 
 -- Magic regex trick to match keys and values from `help`
@@ -61,6 +63,7 @@ local kap,keys,lines,locals,lt,main,many,map,merge,merged,merges,mid
 local no,norm,o,on,oo,per,prune,push,rint,rand,rnd,row,rogues
 local say,sayln,Seed,selects,showTree,showRule,sort,slice,stats,sway,tree,value,xpln
 local COL,COLS,DATA,NUM,RANGE,RULE,SYM
+local setConfigVar, resetConfigVar, setOriginConfig, sway2, xpln2, getBest, kMeansHalf
 -- Trick to  shorten call to maths functions
 local m = math
 
@@ -218,6 +221,11 @@ function div(col,    e)
        return e
   else return (per(has(col),.9) - per(has(col), .1))/2.58 end end
 
+function getBest(col)
+
+end
+
+
 -- A query that returns `mid` or `div` of `cols` (defaults to `data.cols.y`).
 function stats(data,  fun,cols,nPlaces,     tmp)
   cols= cols or data.cols.y
@@ -228,7 +236,15 @@ function stats(data,  fun,cols,nPlaces,     tmp)
 
 -- A query that normalizes `n` 0..1. Called by (e.g.) the `dist` function.
 function norm(num,n)
-  return n=="?" and n or (n - num.lo)/(num.hi - num.lo + 1/m.huge) end
+  if n == "?" then
+    return n
+  elseif num.lo == num.hi then
+    return 0
+  else
+    return (n - num.lo)/(num.hi - num.lo + 1/m.huge)
+  end
+end
+  -- return n=="?" and n or (n - num.lo)/(num.hi - num.lo + 1/m.huge) end
 
 -- A query that returns the score a distribution of symbols inside a SYM.
 function value(has,  nB,nR,sGoal,    b,r)
@@ -300,6 +316,92 @@ function half(data,  rows,cols,above)
   evals = is.Reuse and above and 1 or 2
   return left,right,A,B,c,evals end
 
+function kMeansHalf(data,  rows,cols,above,maxIterations)
+  local left,right,evals,far,gap,shouldStop,setNewCentroids,some,proj,cos,tmp,currA,currB,c = {},{};
+  local oldCentroids, currCentroids = {}, {};
+  local label_table = {};
+  local oldA, oldB;
+  local left_num, right_num = 0, 0;
+  -- default 6 times kmeans cluster
+  maxIterations = maxIterations or 6
+
+  function gap(r1,r2) return dist(data, r1, r2, cols) end
+  function cos(a,b,c) return (a^2 + c^2 - b^2)/(2*c) end
+  function proj(r)    return {row=r, x=cos(gap(r,currA), gap(r,currB),c)} end
+  function shouldStop(iterations)
+    if iterations == 0 then
+      return false
+    end
+    if maxIterations <= iterations then
+      return true
+    end
+    if table.concat(currA) == table.concat(oldA) and table.concat(currB) == table.concat(oldB) then
+      return true
+    end
+    return false
+  end
+
+  function setNewCentroids()
+    oldA = copy(currA)
+    oldB = copy(currB)
+    -- reset old centroids
+    for k,v in pairs(currA) do
+      currA[k] = 0.0
+    end
+    for k,v in pairs(currB) do
+      currB[k] = 0.0
+    end
+
+    -- get the centroids(mean) of left and right cluster
+    for index, row in pairs(rows) do
+      if label_table[index] == "left" then
+        for k,v in row do
+          currA[k] = currA[k] + v / left_num
+        end
+      else
+        for k,v in row do
+          currB[k] = currB[k] + v / right_num
+        end
+      end
+    end
+  end
+
+  rows = rows or data.rows
+  -- k = 2, randomly pick 2 points
+  some = many(rows, 2)
+  currA, currB, oldA, oldB    = copy(some[1]), copy(some[2]), copy(some[1]), copy(some[2])
+  c = gap(currB, currA)
+  local iterations = 0
+  while(not shouldStop(iterations)) do
+    if iterations ~= 0 then
+      setNewCentroids()
+    end
+    left_num = 0
+    right_num = 0
+    for index,row in pairs(rows) do
+      local distA = gap(currA, row)
+      local distB = gap(currB, row)
+      if distA < distB then
+        left_num = left_num + 1
+        label_table[index] = "left"
+      else
+        right_num = right_num + 1
+        label_table[index] = "right"
+      end
+      -- push(distA < distB and left or right, row)
+    end
+    iterations = iterations + 1
+  end
+  for index,label in pairs(label_table) do
+    if label == "left" then
+      push(left, rows[index])
+    else
+      push(right, rows[index])
+    end
+  end
+  evals = is.Reuse and above and 1 or 2
+return left,right,currA,currB,c,evals end
+
 -- Cluster, recursively, some `rows` by  dividing them in two, many times
 function tree(data,  rows,cols,above,     here)
   rows = rows or data.rows
@@ -336,15 +438,17 @@ function sway(data,     worker,best,rest,c,evals)
   return DATA(data,best), DATA(data,rest),evals end
 
 function sway2(data,     worker,best,rest,c,evals)
+  -- setConfigVar()
   function worker(rows,worse,  evals0,above)
     if   #rows <= (#data.rows)^is.min
     then return rows, many(worse, is.rest*#rows),evals0
-    else local l,r,A,B,c,evals = half(data, rows, cols, above)
+    else local l,r,A,B,c,evals = kMeansHalf(data, rows, cols, above)
           if better(data,B,A) then l,r,A,B = r,l,B,A end
           map(r, function(row) push(worse,row) end)
           return worker(l,worse,evals+evals0,A) end
   end ----------------------------------
   best,rest,evals = worker(data.rows,{},0)
+  -- resetConfigVar()
   return DATA(data,best), DATA(data,rest),evals end
 
 
@@ -461,7 +565,7 @@ function firstN(sortedRanges,scoreFun,           first,useful,most,out)
   first = sortedRanges[1].val
   function useful(range)
     -- I changed the threshold value for useless range, reduced from 0.05 to 0.005 
-    if range.val>.005 and range.val> first/10 then return range end
+    if range.val>.00005 and range.val> first/10000 then return range end
   end -------------------------------
   -- sortedRanges = map(sortedRanges,useful) -- reject  useless ranges
   most,out = -1
@@ -628,6 +732,26 @@ function o(t,    fun)
   function fun (k,v) return fmt(":%s %s",k,o(v)) end
   return "{"..table.concat(#t>0  and map(t,o) or sort(kap(t,fun))," ").."}" end
 
+
+-- extra functions for projects
+function setOriginConfig()
+  for k, v in pairs(is) do
+    originIs[k] = is[k]
+  end
+end
+
+
+function setConfigVar()
+  is.min = 0.4
+  is.bins = 32
+end
+
+function resetConfigVar()
+  is.min = originIs.min
+  is.bins = originIs.bins
+end
+
+
 -- ### Main Control
 
 -- Rune all the functions whose name matches
@@ -636,6 +760,8 @@ function o(t,    fun)
 -- system the number of failing `funs`.
 function main(funs,is,help,    y,n,saved,k,val,ok)
   y,n,saved = 0,0,copy(is)
+  originIs = copy(is)
+  -- setOriginConfig()
   if   is.help
   then os.exit(print(help)) end
   for _,pair in pairs(funs) do
@@ -798,41 +924,56 @@ go("bins", "find deltas between best and rest", function(    data,best,rest, b4)
            o(range.y.has)) end end end)
 
 go("xpln","explore explanation sets", function(     data,data1,rule,most,_,best,rest,top,evals)
-  local file_dir = "C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\project_data\\"
-  local i, t, popen = 0, {}, io.popen
-  local pfile = popen('dir /b "'..file_dir..'"')
-  for filename in pfile:lines() do
-      i = i + 1
-      t[i] = filename
-      print(filename)
-      data=DATA(file_dir..filename)
-      best,rest,evals = sway(data)
-      rule,most= xpln(data,best,rest)
-      print("\n-----------\nexplain=", o(showRule(rule)))
-      data1= DATA(data,selects(rule,data.rows))
-      print("all               ",o(stats(data)),o(stats(data,div)))
-      print(fmt("sway with %5s evals",evals),o(stats(best)),o(stats(best,div)))
-      print(fmt("xpln on   %5s evals",evals),o(stats(data1)),o(stats(data1,div)))
-      top,_ = betters(data, #best.rows)
-      top = DATA(data,top)
-      print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)), o(stats(top,div)))
-      print("-----------------------------")
-      print("")
-  end
-  pfile:close()
-  -- data=DATA(is.file)
-  -- best,rest,evals = sway(data)
-  -- rule,most= xpln(data,best,rest)
-  -- print("\n-----------\nexplain=", o(showRule(rule)))
-  -- data1= DATA(data,selects(rule,data.rows))
-  -- print("all               ",o(stats(data)),o(stats(data,div)))
-  -- print(fmt("sway with %5s evals",evals),o(stats(best)),o(stats(best,div)))
-  -- print(fmt("xpln on   %5s evals",evals),o(stats(data1)),o(stats(data1,div)))
-  -- top,_ = betters(data, #best.rows)
-  -- top = DATA(data,top)
-  -- print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)), o(stats(top,div)))
-  -- print("-----------------------------")
-  -- print("")
+  -- local file_dir = "C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\project_data\\"
+  -- local i, t, popen = 0, {}, io.popen
+  -- local pfile = popen('dir /b "'..file_dir..'"')
+  -- for filename in pfile:lines() do
+  --     i = i + 1
+  --     t[i] = filename
+  --     print(filename)
+  --     data=DATA(file_dir..filename)
+  --     best,rest,evals = sway(data)
+  --     rule,most= xpln(data,best,rest)
+  --     print("\n-----------\nexplain=", o(showRule(rule)))
+  --     data1= DATA(data,selects(rule,data.rows))
+  --     local test_data, other_data = stats(best)
+  --     -- local best_of_best1 = betters(best, 1)
+  --     -- local best_data1 = DATA(data, best_of_best1)
+  --     print("all               ",o(stats(data)))
+  --     print(fmt("sway with %5s evals",evals),o(stats(best)))
+  --     print(fmt("xpln on   %5s evals",evals),o(stats(data1)))
+  --     top,_ = betters(data, #best.rows)
+  --     top = DATA(data,top)
+  --     print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)))
+
+  --     local best2, rest2, evals2 = sway2(data)
+  --     local rule2,most2= xpln(data,best2,rest2)
+  --     local data2= DATA(data,selects(rule2,data.rows))
+  --     print(fmt("sway2 with %5s evals",evals2),o(stats(best2)))
+  --     print(fmt("xpln2 on   %5s evals",evals2),o(stats(data2)))
+  --     print("-----------------------------")
+  --     print("")
+  -- end
+  -- pfile:close()
+  data=DATA(is.file)
+  best,rest,evals = sway(data)
+  rule,most= xpln(data,best,rest)
+  print("\n-----------\nexplain=", o(showRule(rule)))
+  data1= DATA(data,selects(rule,data.rows))
+  print("all               ",o(stats(data)))
+  print(fmt("sway with %5s evals",evals),o(stats(best)))
+  print(fmt("xpln on   %5s evals",evals),o(stats(data1)))
+  top,_ = betters(data, #best.rows)
+  top = DATA(data,top)
+  print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)))
+
+  local best2, rest2, evals2 = sway2(data)
+  local rule2,most2= xpln(data,best2,rest2)
+  local data2= DATA(data,selects(rule2,data.rows))
+  print(fmt("sway2 with %5s evals",evals2),o(stats(best2)))
+  print(fmt("xpln2 on   %5s evals",evals2),o(stats(data2)))
+  print("-----------------------------")
+  print("")
 end)
 
 -- ## Start-up
