@@ -355,11 +355,11 @@ function kMeansHalf(data,  rows,cols,above,maxIterations)
     -- get the centroids(mean) of left and right cluster
     for index, row in pairs(rows) do
       if label_table[index] == "left" then
-        for k,v in row do
+        for k,v in pairs(row) do
           currA[k] = currA[k] + v / left_num
         end
       else
-        for k,v in row do
+        for k,v in pairs(row) do
           currB[k] = currB[k] + v / right_num
         end
       end
@@ -369,13 +369,13 @@ function kMeansHalf(data,  rows,cols,above,maxIterations)
   rows = rows or data.rows
   -- k = 2, randomly pick 2 points
   some = many(rows, 2)
-  currA, currB, oldA, oldB    = copy(some[1]), copy(some[2]), copy(some[1]), copy(some[2])
+  currA, currB = copy(some[1]), copy(some[2])
   c = gap(currB, currA)
   local iterations = 0
   while(not shouldStop(iterations)) do
-    if iterations ~= 0 then
-      setNewCentroids()
-    end
+    -- if iterations ~= 0 then
+    --   setNewCentroids()
+    -- end
     left_num = 0
     right_num = 0
     for index,row in pairs(rows) do
@@ -391,6 +391,7 @@ function kMeansHalf(data,  rows,cols,above,maxIterations)
       -- push(distA < distB and left or right, row)
     end
     iterations = iterations + 1
+    setNewCentroids()
   end
   for index,label in pairs(label_table) do
     if label == "left" then
@@ -438,17 +439,17 @@ function sway(data,     worker,best,rest,c,evals)
   return DATA(data,best), DATA(data,rest),evals end
 
 function sway2(data,     worker,best,rest,c,evals)
-  -- setConfigVar()
+  setConfigVar()
   function worker(rows,worse,  evals0,above)
     if   #rows <= (#data.rows)^is.min
     then return rows, many(worse, is.rest*#rows),evals0
-    else local l,r,A,B,c,evals = kMeansHalf(data, rows, cols, above)
+    else local l,r,A,B,c,evals = half(data, rows, cols, above)
           if better(data,B,A) then l,r,A,B = r,l,B,A end
           map(r, function(row) push(worse,row) end)
           return worker(l,worse,evals+evals0,A) end
   end ----------------------------------
   best,rest,evals = worker(data.rows,{},0)
-  -- resetConfigVar()
+  resetConfigVar()
   return DATA(data,best), DATA(data,rest),evals end
 
 
@@ -924,56 +925,56 @@ go("bins", "find deltas between best and rest", function(    data,best,rest, b4)
            o(range.y.has)) end end end)
 
 go("xpln","explore explanation sets", function(     data,data1,rule,most,_,best,rest,top,evals)
-  -- local file_dir = "C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\project_data\\"
-  -- local i, t, popen = 0, {}, io.popen
-  -- local pfile = popen('dir /b "'..file_dir..'"')
-  -- for filename in pfile:lines() do
-  --     i = i + 1
-  --     t[i] = filename
-  --     print(filename)
-  --     data=DATA(file_dir..filename)
-  --     best,rest,evals = sway(data)
-  --     rule,most= xpln(data,best,rest)
-  --     print("\n-----------\nexplain=", o(showRule(rule)))
-  --     data1= DATA(data,selects(rule,data.rows))
-  --     local test_data, other_data = stats(best)
-  --     -- local best_of_best1 = betters(best, 1)
-  --     -- local best_data1 = DATA(data, best_of_best1)
-  --     print("all               ",o(stats(data)))
-  --     print(fmt("sway with %5s evals",evals),o(stats(best)))
-  --     print(fmt("xpln on   %5s evals",evals),o(stats(data1)))
-  --     top,_ = betters(data, #best.rows)
-  --     top = DATA(data,top)
-  --     print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)))
+  local file_dir = "C:\\Github\\CSC591_CSE\\Homework1\\23Spring-ASE\\etc\\data\\project_data\\"
+  local i, t, popen = 0, {}, io.popen
+  local pfile = popen('dir /b "'..file_dir..'"')
+  for filename in pfile:lines() do
+      i = i + 1
+      t[i] = filename
+      print(filename)
+      data=DATA(file_dir..filename)
+      best,rest,evals = sway(data)
+      rule,most= xpln(data,best,rest)
+      print("\n-----------\nexplain=", o(showRule(rule)))
+      data1= DATA(data,selects(rule,data.rows))
+      local test_data, other_data = stats(best)
+      -- local best_of_best1 = betters(best, 1)
+      -- local best_data1 = DATA(data, best_of_best1)
+      print("all               ",o(stats(data)))
+      print(fmt("sway with %5s evals",evals),o(stats(best)))
+      print(fmt("xpln on   %5s evals",evals),o(stats(data1)))
+      top,_ = betters(data, #best.rows)
+      top = DATA(data,top)
+      print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)))
 
-  --     local best2, rest2, evals2 = sway2(data)
-  --     local rule2,most2= xpln(data,best2,rest2)
-  --     local data2= DATA(data,selects(rule2,data.rows))
-  --     print(fmt("sway2 with %5s evals",evals2),o(stats(best2)))
-  --     print(fmt("xpln2 on   %5s evals",evals2),o(stats(data2)))
-  --     print("-----------------------------")
-  --     print("")
-  -- end
-  -- pfile:close()
-  data=DATA(is.file)
-  best,rest,evals = sway(data)
-  rule,most= xpln(data,best,rest)
-  print("\n-----------\nexplain=", o(showRule(rule)))
-  data1= DATA(data,selects(rule,data.rows))
-  print("all               ",o(stats(data)))
-  print(fmt("sway with %5s evals",evals),o(stats(best)))
-  print(fmt("xpln on   %5s evals",evals),o(stats(data1)))
-  top,_ = betters(data, #best.rows)
-  top = DATA(data,top)
-  print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)))
+      local best2, rest2, evals2 = sway2(data)
+      local rule2,most2= xpln(data,best2,rest2)
+      local data2= DATA(data,selects(rule2,data.rows))
+      print(fmt("sway2 with %5s evals",evals2),o(stats(best2)))
+      print(fmt("xpln2 on   %5s evals",evals2),o(stats(data2)))
+      print("-----------------------------")
+      print("")
+  end
+  pfile:close()
+  -- data=DATA(is.file)
+  -- best,rest,evals = sway(data)
+  -- rule,most= xpln(data,best,rest)
+  -- print("\n-----------\nexplain=", o(showRule(rule)))
+  -- data1= DATA(data,selects(rule,data.rows))
+  -- print("all               ",o(stats(data)))
+  -- print(fmt("sway with %5s evals",evals),o(stats(best)))
+  -- print(fmt("xpln on   %5s evals",evals),o(stats(data1)))
+  -- top,_ = betters(data, #best.rows)
+  -- top = DATA(data,top)
+  -- print(fmt("sort with %5s evals",#data.rows) ,o(stats(top)))
 
-  local best2, rest2, evals2 = sway2(data)
-  local rule2,most2= xpln(data,best2,rest2)
-  local data2= DATA(data,selects(rule2,data.rows))
-  print(fmt("sway2 with %5s evals",evals2),o(stats(best2)))
-  print(fmt("xpln2 on   %5s evals",evals2),o(stats(data2)))
-  print("-----------------------------")
-  print("")
+  -- local best2, rest2, evals2 = sway2(data)
+  -- local rule2,most2= xpln(data,best2,rest2)
+  -- local data2= DATA(data,selects(rule2,data.rows))
+  -- print(fmt("sway2 with %5s evals",evals2),o(stats(best2)))
+  -- print(fmt("xpln2 on   %5s evals",evals2),o(stats(data2)))
+  -- print("-----------------------------")
+  -- print("")
 end)
 
 -- ## Start-up

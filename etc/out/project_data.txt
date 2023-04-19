@@ -1,0 +1,154 @@
+Γû╢∩╕Å  xpln ------------------------------------------------------------
+auto2.csv
+
+
+-----------
+explain=        {:Engine_size {{-inf 2}} :Number_of_cylinders {{3 5}} :domestic {0}}
+all                     {:CityMPG+ 21.0 :Class- 17.7 :HighwayMPG+ 28.0 :N 93 :Weight- 3040.0}
+sway with     5 evals   {:CityMPG+ 29.0 :Class- 9.8 :HighwayMPG+ 33.0 :N 6 :Weight- 2295.0}
+xpln on       5 evals   {:CityMPG+ 29.0 :Class- 10.0 :HighwayMPG+ 34.0 :N 17 :Weight- 2345.0}
+sort with    93 evals   {:CityMPG+ 33.0 :Class- 8.6 :HighwayMPG+ 41.0 :N 6 :Weight- 2045.0}
+
+sway2 with     5 evals  {:CityMPG+ 33.0 :Class- 8.4 :HighwayMPG+ 37.0 :N 5 :Weight- 2045.0}
+xpln2 on       5 evals  {:CityMPG+ 22.0 :Class- 19.1 :HighwayMPG+ 30.0 :N 45 :Weight- 2950.0}
+-----------------------------
+
+auto93.csv
+
+
+-----------
+explain=        {:Model {{79 inf}} :Volume {{-inf 116}}}
+all                     {:Acc+ 15.5 :Lbs- 2800.0 :Mpg+ 20.0 :N 398}
+sway with     6 evals   {:Acc+ 17.0 :Lbs- 2050.0 :Mpg+ 40.0 :N 13}
+xpln on       6 evals   {:Acc+ 16.2 :Lbs- 2110.0 :Mpg+ 30.0 :N 52}
+sort with   398 evals   {:Acc+ 18.8 :Lbs- 2025.0 :Mpg+ 40.0 :N 13}
+
+sway2 with     7 evals  {:Acc+ 14.5 :Lbs- 1985.0 :Mpg+ 30.0 :N 6}
+xpln2 on       7 evals  {:Acc+ 15.7 :Lbs- 2234.0 :Mpg+ 30.0 :N 70}
+-----------------------------
+
+china.csv
+
+
+-----------
+explain=        {:AFP {{-inf 487}} :Enquiry {{-inf 29}} :File {{-inf 90}} :Input {{-inf 301}} :NPDR_AFP {{2.9 15.9}} :NPDU_UFP {{3.1 17.3}} :PDR_AFP {{2.6 13.6}} :PDR_UFP {{3.1 9.1}}}
+all                     {:N 499 :N_effort- 2098.0}
+sway with     6 evals   {:N 16 :N_effort- 547.0}
+xpln on       6 evals   {:N 93 :N_effort- 680.0}
+sort with   499 evals   {:N 16 :N_effort- 145.0}
+
+sway2 with     7 evals  {:N 7 :N_effort- 512.0}
+xpln2 on       7 evals  {:N 34 :N_effort- 700.0}
+-----------------------------
+
+coc1000.csv
+
+
+-----------
+explain=        {:SCED {{1 inf}} :SITE {{-inf 4}} :TEAM {{-inf 1} {2 inf}} :TIME {{-inf 5}}}
+all                     {:AEXP- 3.0 :EFFORT- 20378.0 :LOC+ 1052.0 :N 1000 :PLEX- 3.0 :RISK- 5.0}
+sway with     6 evals   {:AEXP- 3.0 :EFFORT- 12953.0 :LOC+ 1077.0 :N 31 :PLEX- 3.0 :RISK- 3.0}
+xpln on       6 evals   {:AEXP- 3.0 :EFFORT- 21707.0 :LOC+ 1091.0 :N 278 :PLEX- 3.0 :RISK- 3.0}
+sort with  1000 evals   {:AEXP- 2.0 :EFFORT- 30241.0 :LOC+ 1540.0 :N 31 :PLEX- 1.0 :RISK- 3.0}
+
+sway2 with     7 evals  {:AEXP- 3.0 :EFFORT- 10559.0 :LOC+ 926.0 :N 15 :PLEX- 3.0 :RISK- 1.0}
+xpln2 on       7 evals  {:AEXP- 3.0 :EFFORT- 21775.0 :LOC+ 1087.0 :N 639 :PLEX- 3.0 :RISK- 5.0}
+-----------------------------
+
+coc10000.csv
+
+
+-----------
+explain=        {:Aexp {{1 inf}} :Pcap {{1 inf}} :Pvol {{-inf 4}} :Rely {{1 inf}}}
+all                     {:Effort- 19749.0 :Loc+ 1031.0 :N 10000 :Risk- 5.0}
+sway with     8 evals   {:Effort- 15016.0 :Loc+ 1080.0 :N 78 :Risk- 2.0}
+xpln on       8 evals   {:Effort- 18084.0 :Loc+ 1009.0 :N 4916 :Risk- 5.0}
+sort with 10000 evals   {:Effort- 17733.0 :Loc+ 1959.0 :N 78 :Risk- 0.0}
+
+sway2 with     9 evals  {:Effort- 11549.0 :Loc+ 1009.0 :N 39 :Risk- 6.0}
+xpln2 on       9 evals  {:Effort- 19757.0 :Loc+ 1102.0 :N 1730 :Risk- 6.0}
+-----------------------------
+
+healthCloseIsses12mths0001-hard.csv
+
+
+-----------
+explain=        {:Max_depth {{13 inf}} :Min_impurity_decrease {{2.25 inf}} :Min_sample_leaves {{13 inf}} :N_estimators {{100 inf}} :criterion {squared_error}}
+all                     {:ACC+ 7.19 :MRE- 75.03 :N 10000 :PRED40+ 25.0}
+sway with     8 evals   {:ACC+ 7.57 :MRE- 73.61 :N 78 :PRED40+ 25.0}
+xpln on       8 evals   {:ACC+ 7.54 :MRE- 73.72 :N 261 :PRED40+ 25.0}
+sort with 10000 evals   {:ACC+ 11.33 :MRE- 64.86 :N 78 :PRED40+ 25.0}
+
+sway2 with     9 evals  {:ACC+ 7.5 :MRE- 73.82 :N 39 :PRED40+ 25.0}
+xpln2 on       9 evals  {:ACC+ 7.48 :MRE- 73.82 :N 284 :PRED40+ 25.0}
+-----------------------------
+
+healthCloseIsses12mths0011-easy.csv
+
+
+-----------
+explain=        {:Max_depth {{10 inf}} :Min_impurity_decrease {{-inf 6.75}} :Min_sample_leaves {{10 inf}} :N_estimators {{-inf 90}} :criterion {absolute_error}}
+all                     {:ACC+ -12.15 :MRE- 119.33 :N 10000 :PRED40+ 0.0}
+sway with     8 evals   {:ACC+ 0.0 :MRE- 0.0 :N 78 :PRED40+ 83.33}
+xpln on       8 evals   {:ACC+ 0.0 :MRE- 0.0 :N 244 :PRED40+ 83.33}
+sort with 10000 evals   {:ACC+ 0.0 :MRE- 0.0 :N 78 :PRED40+ 83.33}
+
+sway2 with     9 evals  {:ACC+ -0.49 :MRE- 100.5 :N 39 :PRED40+ 0.0}
+xpln2 on       9 evals  {:ACC+ 0.0 :MRE- 0.0 :N 187 :PRED40+ 83.33}
+-----------------------------
+
+nasa93dem.csv
+
+
+-----------
+explain=        {:cplx {h} :ltex {h} :pvol {l} :sced {l}}
+all                     {:Defects- 2007.0 :Effort- 252.0 :Kloc+ 47.5 :Months- 21.4 :N 93}
+sway with     5 evals   {:Defects- 810.0 :Effort- 82.0 :Kloc+ 16.3 :Months- 14.8 :N 5}
+xpln on       5 evals   {:Defects- 808.0 :Effort- 82.0 :Kloc+ 24.6 :Months- 15.0 :N 27}
+sort with    93 evals   {:Defects- 109.0 :Effort- 10.8 :Kloc+ 3.5 :Months- 7.8 :N 5}
+
+sway2 with     5 evals  {:Defects- 566.0 :Effort- 48.0 :Kloc+ 20.0 :Months- 14.4 :N 5}
+xpln2 on       5 evals  {:Defects- 470.0 :Effort- 48.0 :Kloc+ 15.0 :Months- 13.6 :N 6}
+-----------------------------
+
+pom.csv
+
+
+-----------
+explain=        {:Criticality {{-inf 1.040539142} {1.098476764 1.157398545}} :Dynamism {{-inf 5}} :Plan {{-inf 3}} :Score: {{0.899212397 inf}} :Team Size {{12 inf}}}
+all                     {:Completion+ 0.89 :Cost- 315.93 :Idle- 0.24 :N 10000}
+sway with     8 evals   {:Completion+ 0.89 :Cost- 269.49 :Idle- 0.31 :N 78}   
+xpln on       8 evals   {:Completion+ 0.89 :Cost- 313.06 :Idle- 0.26 :N 1254} 
+sort with 10000 evals   {:Completion+ 1.0 :Cost- 138.51 :Idle- 0.0 :N 78}
+
+sway2 with     9 evals  {:Completion+ 0.9 :Cost- 267.72 :Idle- 0.25 :N 39}
+xpln2 on       9 evals  {:Completion+ 0.89 :Cost- 222.93 :Idle- 0.2 :N 1889}
+-----------------------------
+
+SSM.csv
+
+
+-----------
+explain=        {:ALPHA {{45 inf}} :BETA {{-inf 50}} :POSTSMOOTHING {{4 inf}} :PRESMOOTHING {{4 inf}} :cOLORGS {0} :f {0} :lINE {0} :rELAXPARAMETER {0} :v {1}}
+all                     {:N 239360 :NUMBERITERATIONS- 7.0 :TIMETOSOLUTION- 139.58}
+sway with    10 evals   {:N 467 :NUMBERITERATIONS- 4.0 :TIMETOSOLUTION- 130.06}
+xpln on      10 evals   {:N 2700 :NUMBERITERATIONS- 6.0 :TIMETOSOLUTION- 147.64}
+sort with 239360 evals  {:N 467 :NUMBERITERATIONS- 4.0 :TIMETOSOLUTION- 59.97}
+
+sway2 with    12 evals  {:N 116 :NUMBERITERATIONS- 5.0 :TIMETOSOLUTION- 80.68}
+xpln2 on      12 evals  {:N 14960 :NUMBERITERATIONS- 6.0 :TIMETOSOLUTION- 105.55}
+-----------------------------
+
+SSN.csv
+
+
+-----------
+explain=        {:B_bias {{-inf -26} {32 inf}} :Threads {{28 inf}} :no_asm {0} :no_cabac {0} :no_mbtree {0} :no_scenecut {0}}
+all                     {:Energy- 1203.58 :N 53662 :PSNR- 45.33}
+sway with     9 evals   {:Energy- 589.73 :N 209 :PSNR- 45.83}
+xpln on       9 evals   {:Energy- 766.09 :N 9101 :PSNR- 45.82}
+sort with 53662 evals   {:Energy- 465.94 :N 209 :PSNR- 26.7}
+
+sway2 with    11 evals  {:Energy- 785.44 :N 52 :PSNR- 46.79}
+xpln2 on      11 evals  {:Energy- 1167.16 :N 488 :PSNR- 48.03}
+-----------------------------
