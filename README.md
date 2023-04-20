@@ -8,6 +8,9 @@ NC State
 
 **Group 26** repository
 
+## Final Project
+[Report](https://github.com/SLED-5/23Spring-ASE/blob/main/Improving%20SWAY%20and%20XPLN%20Algorithms%20through%20Optimization%20Schemes.pdf)
+
 ## Index
 [**output**](https://github.com/SLED-5/23Spring-ASE/tree/main/etc/out)
 
